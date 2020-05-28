@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loaderManager.initLoader(LOADER_ID, null, MainActivity.this);
+        loaderManager.restartLoader(LOADER_ID, null, MainActivity.this);
         Log.i(LOG_TAG, "LoaderManager initialised called::");
 
 //        nullNEWS = findViewById(R.id.status);

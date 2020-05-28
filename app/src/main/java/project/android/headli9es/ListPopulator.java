@@ -19,7 +19,7 @@ public class ListPopulator extends ArrayAdapter<News> {
 
     public ListPopulator (Context context, List<News> data) {
         super(context, 0, data);
-        data = news;
+        news = (ArrayList<News>) data;
     }
 
     @NonNull
@@ -33,7 +33,7 @@ public class ListPopulator extends ArrayAdapter<News> {
         News currentArticle = getItem(position);
 
         TextView numArticles = convertView.findViewById(R.id.num_articles);
-        numArticles.setText(R.string.total_articles +  currentArticle.getArticlesNumber());
+        numArticles.setText(R.string.total_articles + currentArticle.getArticlesNumber());
 
         TextView source = convertView.findViewById(R.id.news_source);
         source.setText(String.format("%s, for %s.", currentArticle.getAuthor(), currentArticle.getSource()));
