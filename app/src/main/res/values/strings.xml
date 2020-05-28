@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Headli9es</string>
+    <string name="total_articles">Total Articles: </string>
 </resources>
