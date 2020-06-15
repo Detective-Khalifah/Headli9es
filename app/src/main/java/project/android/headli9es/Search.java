@@ -150,7 +150,7 @@ public class Search {
             JSONObject rootJSONObj = new JSONObject(newsJSONResponse);
 
             // Number of articles
-            String articlesNumber = rootJSONObj.getString("totalResults");
+            int articlesNumber = rootJSONObj.getInt("totalResults");
 
             // Extract the JSONArray associated with the key called "articles"
             // which represents a list newsList.

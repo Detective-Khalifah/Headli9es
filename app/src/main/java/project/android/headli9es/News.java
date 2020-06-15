@@ -2,7 +2,7 @@ package project.android.headli9es;
 
 class News {
 
-    private String articlesNumber;
+    private int articlesNumber;
     private String author; //
     private String description; //
     private String date; //
@@ -10,7 +10,7 @@ class News {
     private String source; //
     private String title;
 
-    public News (String theArticlesNumber, String theAuthor, String theDescription, String theDate, String theSource, String theTitle, String thePage) {
+    public News (int theArticlesNumber, String theAuthor, String theDescription, String theDate, String theSource, String theTitle, String thePage) {
         this.articlesNumber = theArticlesNumber;
         this.author = theAuthor;
         this.description = theDescription;
@@ -20,8 +20,8 @@ class News {
         this.title = theTitle;
     }
 
-    public String getArticlesNumber() {return this.articlesNumber;}
-    public void setArticlesNumber(String numArticles) {this.articlesNumber = numArticles;}
+    public int getArticlesNumber() {return this.articlesNumber;}
+    public void setArticlesNumber(int numArticles) {this.articlesNumber = numArticles;}
 
     public String getAuthor(){return this.author;}
     public void setAuthor(String author){this.author = author;}
