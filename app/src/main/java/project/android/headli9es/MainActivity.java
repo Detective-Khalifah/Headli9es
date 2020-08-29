@@ -16,6 +16,7 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import project.android.headli9es.databinding.ForecastBinding;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<List<News>>,
@@ -36,10 +37,6 @@ public class MainActivity extends AppCompatActivity implements
 
         mNewsProgress = (ProgressBar) findViewById(R.id.pb_news);
         mNewsRecycler = (RecyclerView) findViewById(R.id.recycler);
-
-//        binder = DataBindingUtil.setContentView(this, R.layout.forecast);
-
-
 
         loaderManager.restartLoader(LOADER_ID, null, MainActivity.this);
         Log.i(LOG_TAG, "LoaderManager initialised called::");
@@ -88,26 +85,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onArticleClickListener (int articlePosition) {
-        Toast mToast;
-        mToast = Toast.makeText(this, "Article #" + articlePosition + " clicked.", Toast.LENGTH_LONG);
-
-        if (mToast != null) {
-            mToast.cancel();
-        }
-        mToast.show();
-
-        Log.i(LOG_TAG, "newsArticles onItemClickListener");
-        // Find the current article that was clicked on
-//        News currentArticle = newsPopulator.getItem(position);
-
+    public void onArticleClickListener (String link) {
         // Convert the String URL into a URI object (to pass into the Intent constructor)
-//        Uri articleUri = Uri.parse(currentArticle.getPage());
+        Uri articleUri = Uri.parse(link);
 
-        // Create a new intent to view the book URI
-//        Intent websiteIntent = new Intent(Intent.ACTION_VIEW, articleUri);
+        // Create a new intent to view the news URI
+        Intent websiteIntent = new Intent(Intent.ACTION_VIEW, articleUri);
 
         // Send the intent to launch a new activity
-//        startActivity(websiteIntent);
+        startActivity(websiteIntent);
     }
 }
