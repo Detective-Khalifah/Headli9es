@@ -9,14 +9,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import project.android.headli9es.databinding.ForecastBinding;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<List<News>>,
@@ -39,20 +38,18 @@ public class MainActivity extends AppCompatActivity implements
         mNewsRecycler = (RecyclerView) findViewById(R.id.recycler);
 
         loaderManager.restartLoader(LOADER_ID, null, MainActivity.this);
-        Log.i(LOG_TAG, "LoaderManager initialised called::");
     }
 
     @Override
     public Loader<List<News>> onCreateLoader (int i, Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader() called");
-        return new NewsLoader(this, "https://newsapi.org/v2/top-headlines?country=ng");
+        return new NewsLoader(this, "https://newsapi.org/v2/top-headlines?country=ng&pageSize=25");
     }
 
     @Override
     public void onLoadFinished (Loader<List<News>> loader, List<News> data) {
-        Log.i(LOG_TAG, "onLoadFinished() called");
-
-        // If there is a valid list of {@link Book}s, then add them to the listPopulator's dataset. This will trigger the ListView to update.
+        // If there is a valid list of {@link News}, then add them to the listPopulator's dataset.
+        // This will trigger the RecyclerView to update.
         if (data != null && !data.isEmpty()) {
             Log.i(LOG_TAG, "Data not empty in onPostExecute's check");
 
@@ -65,13 +62,8 @@ public class MainActivity extends AppCompatActivity implements
 
             // Create a new newsPopulator that takes a rich (or otherwise empty) list of newsList as input
             newsAdapter = new NewsAdapter(data, MainActivity.this);
-//            Log.i(LOG_TAG, "newsPopulator is ::: " + newsPopulator);
 
             mNewsRecycler.setAdapter(newsAdapter);
-            Log.i(LOG_TAG, "Adapter set on Recycler:: " + newsAdapter);
-
-//            binder.tvArticlesCount.numArticles.setText();
-            Log.i(LOG_TAG, "news articles RecyclerView:: " + mNewsRecycler);
         } else {
             mNewsProgress.setVisibility(View.VISIBLE);
             mNewsRecycler.setVisibility(View.GONE);
@@ -81,18 +73,12 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset (Loader loader) {
         Log.i(LOG_TAG, "onLoaderReset() called");
-//        newsPopulator = new NewsPopulator(new ArrayList<News>(), this, binder);
+        newsAdapter = new NewsAdapter(new ArrayList<News>(), this);
     }
 
     @Override
     public void onArticleClickListener (String link) {
-        // Convert the String URL into a URI object (to pass into the Intent constructor)
-        Uri articleUri = Uri.parse(link);
-
-        // Create a new intent to view the news URI
-        Intent websiteIntent = new Intent(Intent.ACTION_VIEW, articleUri);
-
-        // Send the intent to launch a new activity
-        startActivity(websiteIntent);
+        // An implicit intent to open the article link in a browser
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link)));
     }
 }
