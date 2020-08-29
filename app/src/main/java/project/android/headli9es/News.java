@@ -3,28 +3,29 @@ package project.android.headli9es;
 public class News {
 
     private int articlesNumber;
-    private String author; //
+    private String content; //
     private String description; //
     private String date; //
     private String page; // Main
     private String source; //
     private String title;
 
-    public News (int theArticlesNumber, String theAuthor, String theDescription, String theDate, String theSource, String theTitle, String thePage) {
+    public News (int theArticlesNumber, String theContent, String theDescription, String theDate,
+                 String theSource, String theTitle, String thePage) {
         this.articlesNumber = theArticlesNumber;
-        this.author = theAuthor;
+        this.content = theContent;
         this.description = theDescription;
         this.date = theDate;
-        this.page = thePage;
         this.source = theSource;
         this.title = theTitle;
+        this.page = thePage;
     }
 
     public int getArticlesNumber() {return this.articlesNumber;}
     public void setArticlesNumber(int numArticles) {this.articlesNumber = numArticles;}
 
-    public String getAuthor(){return this.author;}
-    public void setAuthor(String author){this.author = author;}
+    public String getContent (){return this.content;}
+    public void setContent (String content){this.content = content;}
 
     public String getSource () {
         return source;

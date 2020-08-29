@@ -161,14 +161,17 @@ public class Search {
             for (int i = 0; i < articlesArray.length(); i++) {
                 JSONObject currentArticle = articlesArray.getJSONObject(i);
 
-                /* Extract author(s)*/
-                String author = currentArticle.optString("author");
+                /* Extract news sourceName */
+                String sourceName = currentArticle.getJSONObject("source").getString("name");
+                Log.i(Search.class.getName(), "sourceName:: " + sourceName);
 
-                if (author.equals("null")) {
-                    /* Make TextView display something nice or disappear. */
-                    author = "Anonymous";
-                }
-                Log.i(Search.class.getName(), "author:: " + author);
+                /* Extract title */
+                String title = currentArticle.optString("title");
+                Log.i(Search.class.getName(), "title:: " + title);
+
+                /* Extract content */
+                String content = currentArticle.optString("content");
+                Log.i(Search.class.getName(), "content:: " + content);
 
                 /* Extract an excerpt of news article */
                 String description = currentArticle.optString("description");
@@ -177,19 +180,18 @@ public class Search {
                 String publish_date = currentArticle.optString("publishedAt");
                 Log.i(Search.class.getName(), "publish_date:: " + publish_date);
 
-                /* Extract news source */
-                String source = currentArticle.getJSONObject("source").getString("name");
-
-                /* Extract title*/
-                String title = currentArticle.getString("title");
-                Log.i(Search.class.getName(), "title:: " + title);
-
                 /* Extract news link - a uri for the current article,
                  which can be used to uniquely open article info online */
                 String web_page = currentArticle.optString("url");
                 Log.i(Search.class.getName(), "web_page:: " + web_page);
 
-                news.add(new News(articlesNumber, author, description, publish_date, source, title, web_page));
+                news.add(new News(articlesNumber,
+                        content,
+                        description,
+                        publish_date,
+                        sourceName,
+                        title,
+                        web_page));
             }
 
         } catch (
