@@ -43,34 +43,27 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsCarrier> {
         int articleLayoutId = R.layout.forecast;
         LayoutInflater roller = LayoutInflater.from(context);
 
-//        View view = roller.inflate(articleLayoutId, parent, false);
-        binder = ForecastBinding.inflate(roller,parent, false);
-//        binder = DataBindingUtil.inflate(roller, R.layout.forecast, parent, false);
-
-//        View viewRoot = roller.inflate(articleLayoutId, parent, false);
-//        ForecastBinding binder = DataBindingUtil.bind(viewRoot);
-
-//        return new NewsCarrier(view);
+        binder = ForecastBinding.inflate(roller,parent, false); //works
         return new NewsCarrier(binder/*, parent*/);
     }
 
     @Override
     public void onBindViewHolder (NewsCarrier holder, int position) {
         Log.d(LOG_TAG, "onBindViewHolder.");
-
         currentArticle = news.get(position);
-//        currentArticle = new News(news.get(position));
-        binder.setNews(currentArticle);
-        binder.executePendingBindings();
+//        binder.setNews(currentArticle);
+//        binder.executePendingBindings();
 
-//        Log.d(LOG_TAG, "currentArticle:: " + currentArticle);
-////        binder = DataBindingUtil.setContentView(activity, R.layout.activity_main);
-//        Log.d(LOG_TAG, "numArticles:: " + currentArticle.getArticlesNumber());
-//        binder.tvArticlesCount.numArticles.append(String.valueOf(currentArticle.getArticlesNumber()));
-//        Log.d(LOG_TAG, "source:: " + currentArticle.getSource());
-//        binder.newsSource.setText(currentArticle.getSource());
-//        Log.d(LOG_TAG, "description:: " + currentArticle.getDescription());
-//        binder.newsDescription.setText(currentArticle.getDescription());
+        Log.d(LOG_TAG, "currentArticle:: " + currentArticle);
+
+        Log.d(LOG_TAG, "numArticles:: " + currentArticle.getArticlesNumber());
+        binder.tvArticlesCount.numArticles.setText(String.valueOf(currentArticle.getArticlesNumber()));
+
+        Log.d(LOG_TAG, "source:: " + currentArticle.getSource());
+        binder.newsSource.setText(currentArticle.getSource());
+
+        Log.d(LOG_TAG, "description:: " + currentArticle.getDescription());
+        binder.newsDescription.setText(currentArticle.getDescription());
     }
 
     @Override
@@ -86,13 +79,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsCarrier> {
 
         public NewsCarrier(ForecastBinding forecastBinding/*, ViewGroup parent*/) {
             super(forecastBinding.getRoot());
+            forecastBinding.getRoot().setOnClickListener(this);
         }
-
-//        public NewsCarrier (View itemView) {
-//            super(itemView);
-//            Log.d(LOG_TAG, "Carrier.");
-//            itemView.setOnClickListener(this);
-//        }
 
         @Override
         public void onClick (View view) {
@@ -121,7 +109,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsCarrier> {
 //
 //        TextView date = convertView.findViewById(R.id.news_date);
 //        date.setText(currentArticle.getDate());
-//
-//        return convertView;
-//        return super.getView(position, convertView, parent);
-//    }
+//        }
+
+//        binder = DataBindingUtil.setContentView(activity, R.layout.forecast); 'nother
+//        View view = roller.inflate(articleLayoutId, parent, false); 'nother
+//        binder = DataBindingUtil.inflate(roller, R.layout.forecast, parent, false);
+//        View viewRoot = roller.inflate(articleLayoutId, parent, false); 'nother
+//        ForecastBinding binder = DataBindingUtil.bind(viewRoot);
+//        return new NewsCarrier(view);
+
+//        public NewsCarrier (View itemView) {super(itemView); itemView.setOnClickListener(this);}
