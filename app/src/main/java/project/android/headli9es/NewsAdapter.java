@@ -68,7 +68,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsCarrier> {
 
     @Override
     public int getItemCount () {
-        Log.d(LOG_TAG, /*"getItemCount:: " + currentArticle.getArticlesNumber() + */"\narticlesNum::" + articlesNum);
+        Log.d(LOG_TAG,"\narticlesNum::" + news.size());
         return news != null ? news.size() : 0;
     }
 
