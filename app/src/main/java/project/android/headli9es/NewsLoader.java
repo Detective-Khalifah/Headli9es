@@ -27,7 +27,7 @@ class NewsLoader extends AsyncTaskLoader<List<News>> {
         Log.i(NewsLoader.class.getName(), "This is loadInBackground. I received: " + query);
         // Don't perform the request if there are no URLs, or the first URL is null.
         if (query.length() < 1) {
-//            Log.i(BookLoader.class.getName(), "Conditional check finds null");
+            Log.i(NewsLoader.class.getName(), "Conditional check finds null");
             return null;
         } else {
             List<News> result = Search.lookUpVolumes(query);

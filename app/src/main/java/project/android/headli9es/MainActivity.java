@@ -1,72 +1,52 @@
 package project.android.headli9es;
 
+import android.app.Activity;
 import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
-import android.content.Context;
-import android.content.Intent;
 import android.content.Loader;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<News>> {
+public class MainActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<List<News>>,
+        NewsAdapter.ArticleClickListener {
 
     private static final int LOADER_ID = 0;
     private String LOG_TAG = MainActivity.class.getName();
     private LoaderManager loaderManager = getLoaderManager();
-    static ListPopulator listPopulator;
+    private NewsAdapter newsAdapter;
     static TextView nullNEWS;
     ListView newsArticles;
+    private ProgressBar mNewsProgress;
+    protected RecyclerView mNewsRecycler;
+    Activity mainAct;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "App has launched, Khal!");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mNewsProgress = (ProgressBar) findViewById(R.id.pb_news);
+        mNewsRecycler = (RecyclerView) findViewById(R.id.recycler);
+        mainAct = (Activity) MainActivity.this;
+
+//        binder = DataBindingUtil.setContentView(this, R.layout.forecast);
+
+
+
         loaderManager.restartLoader(LOADER_ID, null, MainActivity.this);
         Log.i(LOG_TAG, "LoaderManager initialised called::");
-
-//        nullNEWS = findViewById(R.id.status);
-//        nullNEWS.setText(R.string.matches0);
-
-        // Create a new listPopulator that takes a rich (or otherwise empty) list of newsList as input
-        listPopulator = new ListPopulator(this, new ArrayList<News>());
-        Log.i(LOG_TAG, "listPopulator is ::: " + listPopulator);
-
-        newsArticles = findViewById(R.id.articles_page);
-        newsArticles.setAdapter(listPopulator);
-        Log.i(LOG_TAG, "Adapter set on ListView:: " + newsArticles);
-
-//        newsArticles.setEmptyView(nullNEWS);
-
-        newsArticles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick (AdapterView<?> adapterView, View view, int position, long l) {
-                Log.i(LOG_TAG, "newsArticles onItemClickListener");
-                // Find the current article that was clicked on
-                News currentArticle = listPopulator.getItem(position);
-
-                // Convert the String URL into a URI object (to pass into the Intent constructor)
-                Uri articleUri = Uri.parse(currentArticle.getPage());
-
-                // Create a new intent to view the book URI
-                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, articleUri);
-
-                // Send the intent to launch a new activity
-                startActivity(websiteIntent);
-            }
-        });
-
     }
 
     @Override
@@ -83,27 +63,55 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (data != null && !data.isEmpty()) {
             Log.i(LOG_TAG, "Data not empty in onPostExecute's check");
 
-//            nullNEWS.setVisibility(View.GONE);
+            mNewsProgress.setVisibility(View.GONE);
+            mNewsRecycler.setVisibility(View.VISIBLE);
 
-            // Get the list of newsList from {@link Search}
-            newsArticles = findViewById(R.id.articles_page);
-            Log.i(LOG_TAG, "bookEntries ListView ::: " + newsArticles);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            mNewsRecycler.setLayoutManager(layoutManager);
+            mNewsRecycler.setHasFixedSize(true);
 
-            listPopulator.clear();
-            Log.i(LOG_TAG, "listPopulator cleared.");
+            // Create a new newsPopulator that takes a rich (or otherwise empty) list of newsList as input
+            newsAdapter = new NewsAdapter(data, MainActivity.this, mainAct);
+//            Log.i(LOG_TAG, "newsPopulator is ::: " + newsPopulator);
 
-            listPopulator.addAll(data);
-            Log.i(LOG_TAG, "listPopulator.addAll executed");
+            mNewsRecycler.setAdapter(newsAdapter);
+            Log.i(LOG_TAG, "Adapter set on Recycler:: " + newsAdapter);
+
+//            binder.tvArticlesCount.numArticles.setText();
+            Log.i(LOG_TAG, "news articles RecyclerView:: " + mNewsRecycler);
         } else {
-//            nullNEWS.setVisibility(View.VISIBLE);
-//            nullNEWS.setText(R.string.matches0);
+            mNewsProgress.setVisibility(View.VISIBLE);
+            mNewsRecycler.setVisibility(View.GONE);
         }
     }
 
     @Override
     public void onLoaderReset (Loader loader) {
         Log.i(LOG_TAG, "onLoaderReset() called");
-        listPopulator = new ListPopulator(this, new ArrayList<News>());
-        listPopulator.clear();
+//        newsPopulator = new NewsPopulator(new ArrayList<News>(), this, binder);
+    }
+
+    @Override
+    public void onArticleClickListener (int articlePosition) {
+        Toast mToast;
+        mToast = Toast.makeText(this, "Article #" + articlePosition + " clicked.", Toast.LENGTH_LONG);
+
+        if (mToast != null) {
+            mToast.cancel();
+        }
+        mToast.show();
+
+        Log.i(LOG_TAG, "newsArticles onItemClickListener");
+        // Find the current article that was clicked on
+//                News currentArticle = newsPopulator.getItem(position);
+
+        // Convert the String URL into a URI object (to pass into the Intent constructor)
+//                Uri articleUri = Uri.parse(currentArticle.getPage());
+
+        // Create a new intent to view the book URI
+//                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, articleUri);
+
+        // Send the intent to launch a new activity
+//                startActivity(websiteIntent);
     }
 }

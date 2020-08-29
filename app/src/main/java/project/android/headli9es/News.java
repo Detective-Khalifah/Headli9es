@@ -1,6 +1,6 @@
 package project.android.headli9es;
 
-class News {
+public class News {
 
     private int articlesNumber;
     private String author; //

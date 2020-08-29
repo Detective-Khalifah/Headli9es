@@ -1,5 +1,6 @@
 package project.android.headli9es;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -35,7 +36,7 @@ public class Search {
 
         try {
             JSONResponse = makeHTTPRequest(url);
-        } catch (IOException e) {
+        } catch (IOException ignored) {
 
         }
 
@@ -93,7 +94,7 @@ public class Search {
 //                Log.i(Search.class.getName(), "JSONResponse:: " + JSONResponse);
 
             } else {
-//                 Toast.makeText(MainActivity.getApplicationContext(), "Please enable network connection", Toast.LENGTH_LONG).show();
+//                 Toast.makeText(MainActivity.class.get, "Please enable network connection", Toast.LENGTH_LONG).show();
             }
 
         } catch (IOException e) {
@@ -165,26 +166,29 @@ public class Search {
 
                 if (author.equals("null")) {
                     /* Make TextView display something nice or disappear. */
+                    author = "Anonymous";
                 }
                 Log.i(Search.class.getName(), "author:: " + author);
 
+                /* Extract an excerpt of news article */
                 String description = currentArticle.optString("description");
 
                 /* Extract publish_date*/
                 String publish_date = currentArticle.optString("publishedAt");
                 Log.i(Search.class.getName(), "publish_date:: " + publish_date);
 
+                /* Extract news source */
                 String source = currentArticle.getJSONObject("source").getString("name");
 
                 /* Extract title*/
                 String title = currentArticle.getString("title");
                 Log.i(Search.class.getName(), "title:: " + title);
 
-                /* Extract volume/book ID - a unique identifier for the current book, which can be used to uniquely open book info online */
+                /* Extract news link - a uri for the current article,
+                 which can be used to uniquely open article info online */
                 String web_page = currentArticle.optString("url");
                 Log.i(Search.class.getName(), "web_page:: " + web_page);
 
-//                Log.i(Search.class.getName(), "book:: " + book);
                 news.add(new News(articlesNumber, author, description, publish_date, source, title, web_page));
             }
 

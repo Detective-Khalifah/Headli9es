@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="news" type="project.android.headli9es.News" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <include
             android:id="@+id/tv_articles_count"
@@ -19,41 +20,46 @@
             android:id="@+id/news_source"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="@{news.source}"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            app:layout_constraintTop_toBottomOf="@id/tv_articles_count"
             app:layout_constraintLeft_toLeftOf="parent"
-            tools:text="BBC News" />
+            app:layout_constraintTop_toBottomOf="@id/tv_articles_count" />
 
         <TextView
             android:id="@+id/news_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:maxLines="2"
+            android:text="@{news.description}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             app:layout_constraintLeft_toLeftOf="@id/news_source"
-            app:layout_constraintTop_toBottomOf="@id/news_source"
-            tools:text="Nigeria gains its independence; populace overjoyed at the revelation by..." />
+            app:layout_constraintTop_toBottomOf="@id/news_source" />
 
         <TextView
             android:id="@+id/news_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/darker_gray"
+            android:text="@{news.date}"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            app:layout_constraintTop_toBottomOf="@id/news_description"
+            android:textColor="@android:color/darker_gray"
             app:layout_constraintLeft_toLeftOf="@id/news_source"
-            tools:text="Timestamp: 29082020 1935" />
+            app:layout_constraintTop_toBottomOf="@id/news_description" />
 
-    <!--    <TextView-->
-    <!--        android:id="@+id/news_category"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        tools:text="Politics" />-->
+        <TextView
+            android:id="@+id/news_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="@id/news_source"
+            app:layout_constraintTop_toBottomOf="@id/news_date"
+            android:text="Politics" />
 
-    <!--        <TextView-->
-    <!--            android:id="@+id/status"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content" />-->
-</androidx.constraintlayout.widget.ConstraintLayout></layout>
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="@id/news_source"
+            app:layout_constraintTop_toBottomOf="@id/news_category"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
