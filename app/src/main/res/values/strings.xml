@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Headli9es</string>
-    <string name="total_articles">Total Articles: </string>
+    <string name="default_article_count">Total Articles: 0!</string>
+        <plurals name="articles_count">
+        <item quantity="zero">%d articles found.</item>
+        <item quantity="one">%d article found.</item>
+        <item quantity="other">Total articles: %d</item>
+    </plurals>
 </resources>
