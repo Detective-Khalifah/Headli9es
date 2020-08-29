@@ -2,9 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-<!--    <data>-->
-<!--        <variable name="news" type="project.android.headli9es.News" />-->
-<!--    </data>-->
+    <data>
+        <variable name="news" type="project.android.headli9es.News" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -22,30 +22,30 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
+            android:text="@{news.source}"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_articles_count" />
-        <!--            android:text="@{news.source}"-->
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_articles_count" />
 
         <TextView
             android:id="@+id/news_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="2"
+            android:text="@{news.description}"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintLeft_toLeftOf="@id/news_source"
-        app:layout_constraintTop_toBottomOf="@id/news_source" />
-        <!--            android:text="@{news.description}"-->
+            app:layout_constraintLeft_toLeftOf="@id/news_source"
+            app:layout_constraintTop_toBottomOf="@id/news_source" />
 
         <TextView
             android:id="@+id/news_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{news.date}"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:textColor="@android:color/darker_gray"
-        app:layout_constraintLeft_toLeftOf="@id/news_source"
-        app:layout_constraintTop_toBottomOf="@id/news_description" />
-        <!--            android:text="@{news.date}"-->
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintLeft_toLeftOf="@id/news_source"
+            app:layout_constraintTop_toBottomOf="@id/news_description" />
 
         <TextView
             android:id="@+id/news_category"

@@ -1,17 +1,16 @@
 package project.android.headli9es;
 
-import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,10 +26,8 @@ public class MainActivity extends AppCompatActivity implements
     private LoaderManager loaderManager = getLoaderManager();
     private NewsAdapter newsAdapter;
     static TextView nullNEWS;
-    ListView newsArticles;
     private ProgressBar mNewsProgress;
     protected RecyclerView mNewsRecycler;
-    Activity mainAct;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -39,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements
 
         mNewsProgress = (ProgressBar) findViewById(R.id.pb_news);
         mNewsRecycler = (RecyclerView) findViewById(R.id.recycler);
-        mainAct = (Activity) MainActivity.this;
 
 //        binder = DataBindingUtil.setContentView(this, R.layout.forecast);
 
@@ -71,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements
             mNewsRecycler.setHasFixedSize(true);
 
             // Create a new newsPopulator that takes a rich (or otherwise empty) list of newsList as input
-            newsAdapter = new NewsAdapter(data, MainActivity.this, mainAct);
+            newsAdapter = new NewsAdapter(data, MainActivity.this);
 //            Log.i(LOG_TAG, "newsPopulator is ::: " + newsPopulator);
 
             mNewsRecycler.setAdapter(newsAdapter);
@@ -103,15 +99,15 @@ public class MainActivity extends AppCompatActivity implements
 
         Log.i(LOG_TAG, "newsArticles onItemClickListener");
         // Find the current article that was clicked on
-//                News currentArticle = newsPopulator.getItem(position);
+//        News currentArticle = newsPopulator.getItem(position);
 
         // Convert the String URL into a URI object (to pass into the Intent constructor)
-//                Uri articleUri = Uri.parse(currentArticle.getPage());
+//        Uri articleUri = Uri.parse(currentArticle.getPage());
 
         // Create a new intent to view the book URI
-//                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, articleUri);
+//        Intent websiteIntent = new Intent(Intent.ACTION_VIEW, articleUri);
 
         // Send the intent to launch a new activity
-//                startActivity(websiteIntent);
+//        startActivity(websiteIntent);
     }
 }
