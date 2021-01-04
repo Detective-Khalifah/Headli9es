@@ -1,9 +1,7 @@
 package project.android.headli9es;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,13 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Search {
-    private static final String grab = "6111dbc091194e9d9c5ba3d413d15971";
+
+    private final static String LOG_TAG = Search.class.getName();
 
     /**
      * @param requestURL an initial, unready search query
      */
     protected static List<News> lookUpVolumes (String requestURL) {
-        Log.i(Search.class.getName(), "lookUpVolumes in action.");
+        Log.i(LOG_TAG, "lookUpVolumes in action.");
 
         // Create URL obj
         URL url = createURL(requestURL);
@@ -41,8 +40,9 @@ public class Search {
         }
 
         // Generate a list of newsList from fetched JSON
-        List<News> articles = extractJSONData(JSONResponse);
-//        Log.i(Search.class.getName(), "SearchResult List is made of: " + articles);
+        List<News> articles = extractNYTData(JSONResponse);
+//        List<News> articles = extractJSONData(JSONResponse);
+//        Log.i(LOG_TAG, "SearchResult List is made of: " + articles);
         return articles;
     }
 
@@ -51,13 +51,13 @@ public class Search {
      * @return
      */
     private static URL createURL (String stringURL) {
-        Log.i(Search.class.getName(), "createURL");
         URL url = null;
         try {
             url = new URL(stringURL);
         } catch (MalformedURLException mURLE) {
 
         }
+        Log.i(LOG_TAG, "createURL::" + url);
         return url;
     }
 
@@ -80,23 +80,31 @@ public class Search {
         try {
             urlConn = (HttpURLConnection) url.openConnection();
             urlConn.setRequestMethod("GET");
-            urlConn.setRequestProperty("X-Api-Key", grab);
             urlConn.connect();
 
             // If the request was successful (response code 200), then read the input stream and parse the response.
-            if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                Log.i(Search.class.getName(), "from makeHTTPRequest: Response code 200");
+            switch (urlConn.getResponseCode() ) {
+                case HttpURLConnection.HTTP_OK:
+                    Log.i(LOG_TAG, "from makeHTTPRequest: Response code 200");
 
-                inputStream = urlConn.getInputStream();
-//                Log.i(Search.class.getName(), "inputStream:: " + inputStream);
+                    inputStream = urlConn.getInputStream();
+//                    Log.i(LOG_TAG, "from makeHTTPRequest inputStream:: " + inputStream/*.read()*/);
 
-                JSONResponse = readFromStream(inputStream);
-//                Log.i(Search.class.getName(), "JSONResponse:: " + JSONResponse);
-
-            } else {
-//                 Toast.makeText(MainActivity.class.get, "Please enable network connection", Toast.LENGTH_LONG).show();
+                    JSONResponse = readFromStream(inputStream);
+//                    Log.i(LOG_TAG, "from makeHTTPRequest JSONResponse:: " + JSONResponse);
+                    break;
+                case HttpURLConnection.HTTP_UNAUTHORIZED:
+                    break;
+                case 429:
+                    Log.i(LOG_TAG, "from makeHTTPRequest response::");
+                    break;
+                default:
+                    Log.i(LOG_TAG, "from makeHTTPRequest responseCode:: " + urlConn.getResponseCode());
+                    Log.i(LOG_TAG, "from makeHTTPRequest responseMessage:: " + urlConn.getResponseMessage());
+//                    Log.i(LOG_TAG, "from makeHTTPRequest ErrorStream:: " + urlConn.getErrorStream().read());
+                    Log.i(LOG_TAG, "from makeHTTPRequest inputStream:: " + urlConn.getInputStream().read());
+//                    Toast.makeText(MainActivity.class, "Please enable network connection", Toast.LENGTH_LONG).show();
             }
-
         } catch (IOException e) {
 
         } finally {
@@ -128,11 +136,7 @@ public class Search {
         return myList.toString();
     }
 
-    /**
-     * Return a list of {@link News} objects that has been built up from
-     * parsing a JSON response.
-     */
-    private static List<News> extractJSONData (String newsJSONResponse) {
+    private static List<News> extractNYTData (String newsJSONResponse) {
 
         // If the JSON String is empty or null, then return early.
         if (TextUtils.isEmpty(newsJSONResponse))
@@ -150,40 +154,58 @@ public class Search {
             // Create a JSON object from the SAMPLE_JSON_RESPONSE string
             JSONObject rootJSONObj = new JSONObject(newsJSONResponse);
 
+            /** From root JSON OBJ:: {@link articlesNumber}, {@link articlesArray}, {@link copyrright}, {@link section}, {@link status}, {@link last_updated} */
             // Number of articles
-            int articlesNumber = rootJSONObj.getInt("totalResults");
+            int articlesNumber = rootJSONObj.getInt("num_results");
 
-            // Extract the JSONArray associated with the key called "articles"
+            // Extract the JSONArray associated with the key called "results"
             // which represents a list newsList.
-            JSONArray articlesArray = rootJSONObj.getJSONArray("articles");
+            JSONArray articlesArray = rootJSONObj.getJSONArray("results");
 
             // For each article in the articlesArray, create a {@link news} object
             for (int i = 0; i < articlesArray.length(); i++) {
                 JSONObject currentArticle = articlesArray.getJSONObject(i);
 
+                /* Extract content */
+                String content = currentArticle.optString("abstract");
+                Log.i(LOG_TAG, "content:: " + content);
+
+                /* Extract an excerpt of news article */
+                String description = currentArticle.optJSONArray("des_facet").toString();
+//                for (int j = 0; j < description.length(); j++) {
+//                    description.getString(j);
+//                }
+
+                /* Extract publish_date*/
+                String publish_date = currentArticle.optString("published_date");
+                Log.i(LOG_TAG, "publish_date:: " + publish_date);
+
                 /* Extract news sourceName */
-                String sourceName = currentArticle.getJSONObject("source").getString("name");
-                Log.i(Search.class.getName(), "sourceName:: " + sourceName);
+                String sourceName = currentArticle.optString("byline");
+                Log.i(LOG_TAG, "sourceName:: " + sourceName);
 
                 /* Extract title */
                 String title = currentArticle.optString("title");
-                Log.i(Search.class.getName(), "title:: " + title);
-
-                /* Extract content */
-                String content = currentArticle.optString("content");
-                Log.i(Search.class.getName(), "content:: " + content);
-
-                /* Extract an excerpt of news article */
-                String description = currentArticle.optString("description");
-
-                /* Extract publish_date*/
-                String publish_date = currentArticle.optString("publishedAt");
-                Log.i(Search.class.getName(), "publish_date:: " + publish_date);
+                Log.i(LOG_TAG, "title:: " + title);
 
                 /* Extract news link - a uri for the current article,
                  which can be used to uniquely open article info online */
-                String web_page = currentArticle.optString("url");
-                Log.i(Search.class.getName(), "web_page:: " + web_page);
+                String web_page = currentArticle.optString("short_url");
+                Log.i(LOG_TAG, "web_page:: " + web_page);
+
+                /** Thumbnail deets
+                 * multimedia array, has 5 image objects:: format (height, width)
+                 * 0 => superJumbo (1366, 2048)
+                 * 1 => Standard Thumbnail (75, 75)
+                 * 2 => thumbLarge (150, 150)
+                 * 3 => mediumThreeByTwo210 (140, 210)
+                 * 4 => Normal (127, 190)
+                 * */
+                JSONArray images = currentArticle.getJSONArray("multimedia");
+                String thumbnailURL = images.getJSONObject(1).optString("url");
+                String thumbnailCaption = images.getJSONObject(1).optString("caption");
+                String thumbnailSrc = images.getJSONObject(1).optString("copyright");
+                Log.i(LOG_TAG, "Image Thumbnail::" + "\nthumbnailURL"+ thumbnailURL + "\nthumbnailCaption" + thumbnailCaption + "\nthumbnailSrc" + thumbnailSrc);
 
                 news.add(new News(articlesNumber,
                         content,
@@ -199,10 +221,11 @@ public class Search {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
-            Log.e(Search.class.getName(), "Problem parsing the JSON results_page", e);
+            Log.i(LOG_TAG, "Problem parsing the JSON results_page", e);
         }
 
         // Return the list (polymorphed ArrayList) of newsList
         return news;
     }
+
 }

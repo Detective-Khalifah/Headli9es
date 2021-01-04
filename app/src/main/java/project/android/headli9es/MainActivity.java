@@ -1,7 +1,5 @@
 package project.android.headli9es;
 
-import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,9 +23,9 @@ public class MainActivity extends AppCompatActivity implements
         NewsAdapter.ArticleClickListener {
 
     private static final int LOADER_ID = 0;
-    private String LOG_TAG = MainActivity.class.getName();
+    private String LOG_TAG = MainActivity.class.getName(), section = "home", ap="Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
     private NewsAdapter newsAdapter;
-    static TextView nullNEWS;
+    private TextView nullNEWS;
     private ProgressBar mNewsProgress;
     protected RecyclerView mNewsRecycler;
 
@@ -35,13 +34,14 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mNewsProgress = (ProgressBar) findViewById(R.id.pb_news);
-        mNewsRecycler = (RecyclerView) findViewById(R.id.recycler);
+        nullNEWS = findViewById(R.id.tv_noa);
+        mNewsProgress = findViewById(R.id.pb_news);
+        mNewsRecycler = findViewById(R.id.recycler);
 
         LoaderManager loaderManager = getSupportLoaderManager();
 
         Bundle seek = new Bundle();
-        seek.putString("link", "https://newsapi.org/v2/top-headlines?country=ng&pageSize=25");
+        seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + section + ".json?api-key=" + ap);
         loaderManager.initLoader(LOADER_ID, seek,
                 (LoaderManager.LoaderCallbacks) MainActivity.this);
 
@@ -53,6 +53,12 @@ public class MainActivity extends AppCompatActivity implements
         newsAdapter = new NewsAdapter(new ArrayList<News>(), MainActivity.this);
 
         mNewsRecycler.setAdapter(newsAdapter);
+    }
+
+    private void setEmptyView () {
+        nullNEWS.setVisibility(View.VISIBLE);
+        mNewsProgress.setVisibility(View.GONE);
+        mNewsRecycler.setVisibility(View.GONE);
     }
 
     @Override
@@ -107,8 +113,7 @@ public class MainActivity extends AppCompatActivity implements
             newsAdapter = new NewsAdapter(data, MainActivity.this);
             mNewsRecycler.setAdapter(newsAdapter);
         } else {
-            mNewsProgress.setVisibility(View.VISIBLE);
-            mNewsRecycler.setVisibility(View.GONE);
+            setEmptyView();
         }
     }
 
