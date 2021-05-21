@@ -1,8 +1,11 @@
 package project.android.headli9es;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +18,15 @@ import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
 import project.android.headli9es.databinding.ActivityMainBinding;
 
+import static android.content.Intent.ACTION_VIEW;
+
 public class MainActivity extends AppCompatActivity implements
         LoaderCallbacks<List<News>> {
 
     private static final int LOADER_ID = 0;
     private static final String LOG_TAG = MainActivity.class.getName();
 
-    private final String NY_TIMES_API ="Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
+    private final String NY_TIMES_API = "Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
     private String NY_TimesSection = "home";
 
     private NewsAdapter newsAdapter;
@@ -39,6 +44,14 @@ public class MainActivity extends AppCompatActivity implements
 
         mMainBinding.listView.setAdapter(newsAdapter);
         mMainBinding.listView.setEmptyView(mMainBinding.tvNoa);
+        mMainBinding.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                startActivity(new Intent(ACTION_VIEW,
+                        Uri.parse(newsAdapter.getItem(position).getPage()))
+                );
+            }
+        });
 
         mMainBinding.tvArticlesCount.numArticles.setVisibility(View.GONE);
 
@@ -77,16 +90,16 @@ public class MainActivity extends AppCompatActivity implements
             public List<News> loadInBackground () {
                 Log.i(LOG_TAG, "This is loadInBackground. I received: " + address);
 
-                    // Don't perform the request if there are no URLs, or the first URL is null.
-                    if (address == null) {
-                        Log.i(this.getClass().getName(), "Conditional check finds null");
-                        return null;
-                    } else {
-                        result = Search.lookUpVolumes(bundle.getString("link"));
-                        Log.i(this.getClass().getName(), "result List data: " + result);
-                        return result;
-                    }
+                // Don't perform the request if there are no URLs, or the first URL is null.
+                if (address == null) {
+                    Log.i(this.getClass().getName(), "Conditional check finds null");
+                    return null;
+                } else {
+                    result = Search.lookUpVolumes(bundle.getString("link"));
+                    Log.i(this.getClass().getName(), "result List data: " + result);
+                    return result;
                 }
+            }
         };
     }
 
