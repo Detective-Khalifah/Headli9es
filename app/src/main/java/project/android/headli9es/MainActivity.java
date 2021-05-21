@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         mMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        LoaderManager loaderManager = getSupportLoaderManager();
 
         // Create a new {@link NewsPopulator} that takes an empty, non-null {@link ArrayList} of
         // {@link News} as input
@@ -41,8 +40,13 @@ public class MainActivity extends AppCompatActivity implements
         mMainBinding.listView.setAdapter(newsAdapter);
         mMainBinding.listView.setEmptyView(mMainBinding.tvNoa);
 
+        mMainBinding.tvArticlesCount.numArticles.setVisibility(View.GONE);
+
         Bundle seek = new Bundle();
-        seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection + ".json?api-key=" + NY_TIMES_API);
+        seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection
+                + ".json?api-key=" + NY_TIMES_API);
+
+        LoaderManager loaderManager = getSupportLoaderManager();
         loaderManager.initLoader(LOADER_ID, seek,
                 (LoaderManager.LoaderCallbacks) MainActivity.this);
     }
@@ -89,15 +93,25 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished (androidx.loader.content.Loader<List<News>> loader, List<News> data) {
         mMainBinding.pbNews.setVisibility(View.GONE);
+        mMainBinding.tvArticlesCount.numArticles.setVisibility(View.VISIBLE);
+
         // TODO: LiveData + ViewModel; Pull-to-Refresh.
         newsAdapter.notifyDataSetChanged();
 
-        // If there is a valid list of {@link News}, then add them to the listPopulator's dataset.
-        // This will trigger the RecyclerView to update.
+        // If there is a valid list of {@link News}, then add them to the {@link NewsAdapter}'s dataset.
+        // This will trigger the {@link ListView} to update.
         if (data != null && !data.isEmpty()) {
             Log.i(LOG_TAG, "Data not empty in onPostExecute's check");
 
             newsAdapter.addAll(data);
+
+            // TODO: Find a way to set it automatically.
+            mMainBinding.tvArticlesCount.numArticles.setText(getResources().getQuantityString(
+                    R.plurals.articles_count,
+                    data.get(0).getArticlesNumber(),
+                    data.get(0).getArticlesNumber())
+            );
+            Log.i(LOG_TAG, "Number of articles(List): " + data.get(0).getArticlesNumber());
         } else {
             mMainBinding.tvNoa.setText(R.string.no_article_fetched);
         }
