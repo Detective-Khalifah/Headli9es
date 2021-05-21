@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements
     private ProgressBar mNewsProgress;
     protected RecyclerView mNewsRecycler;
 
+    // TODO: Fix RecylcerView issue of data in list items changing as views are scrolled/recycled.
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
