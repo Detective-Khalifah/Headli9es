@@ -1,5 +1,6 @@
 package project.android.headli9es;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -7,71 +8,45 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import project.android.headli9es.databinding.ForecastBinding;
 
 import static androidx.core.content.ContextCompat.startActivity;
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsCarrier> {
+public class NewsAdapter extends ArrayAdapter<News> {
 
     private static final String LOG_TAG = NewsAdapter.class.getName();
+    private LayoutInflater inflater;
 
-    private final ArticleClickListener articleClickListener;
-    private final ArrayList<News> news;
     protected ForecastBinding binder;
 
-    public interface ArticleClickListener {
-        void onArticleClickListener (String link);
-    }
-
-    public NewsAdapter (List<News> data, ArticleClickListener listener) {
+    public NewsAdapter (Context context, List<News> objects) {
+        super(context, 0, objects);
         Log.d(LOG_TAG, "This is NewsPopulator.");
-        articleClickListener = listener;
-        news = (ArrayList<News>) data;
     }
 
     @Override
-    public NewsCarrier onCreateViewHolder (ViewGroup parent, int viewType) {
-        Log.d(LOG_TAG, "onCreateViewHolder::");
-        Context context = parent.getContext();
-        LayoutInflater roller = LayoutInflater.from(context);
+    public View getView (int position, View convertView, ViewGroup parent) {
+        if (inflater == null)
+            inflater = ( (Activity) parent.getContext()).getLayoutInflater();
 
-        binder = ForecastBinding.inflate(roller, parent, false); //works
-        return new NewsCarrier(binder/*, parent*/);
-    }
+        News currentArticle = getItem(position);
 
-    @Override
-    public void onBindViewHolder (NewsCarrier holder, int position) {
-        Log.d(LOG_TAG, "onBindViewHolder.");
-        binder.setNews(news.get(position));
-        binder.executePendingBindings();
-    }
+        if (binder == null)
+            binder = DataBindingUtil.inflate(inflater, R.layout.forecast, parent, false);
 
-    @Override
-    public int getItemCount () {
-        Log.d(LOG_TAG,"\narticlesNum::" + news.size());
-        return news != null ? news.size() : 0;
-    }
+        binder.setNews(currentArticle);
 
-    /**
-     *
-     */
-    protected class NewsCarrier extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        public NewsCarrier(ForecastBinding forecastBinding/*, ViewGroup parent*/) {
-            super(forecastBinding.getRoot());
-            binder = forecastBinding;
-            forecastBinding.getRoot().setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick (View view) {
-            articleClickListener.onArticleClickListener(news.get(getAdapterPosition()).getPage());
-        }
+//        return convertView;
+        return binder.getRoot();
     }
 }
