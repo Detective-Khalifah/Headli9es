@@ -45,6 +45,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
             binder = DataBindingUtil.inflate(inflater, R.layout.forecast, parent, false);
 
         binder.setNews(currentArticle);
+        binder.executePendingBindings();
 
 //        return convertView;
         return binder.getRoot();
