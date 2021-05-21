@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements
     private NewsAdapter newsAdapter;
     private TextView nullNEWS;
     private ProgressBar mNewsProgress;
-    protected RecyclerView mNewsRecycler;
+    protected ListView mNewsList;
 
     // TODO: Fix RecylcerView issue of data in list items changing as views are scrolled/recycled.
     @Override
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements
 
         nullNEWS = findViewById(R.id.tv_noa);
         mNewsProgress = findViewById(R.id.pb_news);
-        mNewsRecycler = findViewById(R.id.recycler);
+        mNewsList = findViewById(R.id.list_view);
 
         LoaderManager loaderManager = getSupportLoaderManager();
 
@@ -46,20 +47,16 @@ public class MainActivity extends AppCompatActivity implements
         loaderManager.initLoader(LOADER_ID, seek,
                 (LoaderManager.LoaderCallbacks) MainActivity.this);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        mNewsRecycler.setLayoutManager(layoutManager);
-        mNewsRecycler.setHasFixedSize(true);
-
         // Create a new newsPopulator that takes a rich (or otherwise empty) list of newsList as input
         newsAdapter = new NewsAdapter(new ArrayList<News>(), MainActivity.this);
 
-        mNewsRecycler.setAdapter(newsAdapter);
+        mNewsList.setAdapter(newsAdapter);
     }
 
     private void setEmptyView () {
         nullNEWS.setVisibility(View.VISIBLE);
         mNewsProgress.setVisibility(View.GONE);
-        mNewsRecycler.setVisibility(View.GONE);
+        mNewsList.setVisibility(View.GONE);
     }
 
     @Override
@@ -109,10 +106,10 @@ public class MainActivity extends AppCompatActivity implements
             Log.i(LOG_TAG, "Data not empty in onPostExecute's check");
 
             mNewsProgress.setVisibility(View.GONE);
-            mNewsRecycler.setVisibility(View.VISIBLE);
+            mNewsList.setVisibility(View.VISIBLE);
 
             newsAdapter = new NewsAdapter(data, MainActivity.this);
-            mNewsRecycler.setAdapter(newsAdapter);
+            mNewsList.setAdapter(newsAdapter);
         } else {
             setEmptyView();
         }
