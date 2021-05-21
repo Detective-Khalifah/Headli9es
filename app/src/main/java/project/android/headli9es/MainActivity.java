@@ -1,7 +1,5 @@
 package project.android.headli9es;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,12 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<List<News>>,
-        NewsAdapter.ArticleClickListener {
+        LoaderManager.LoaderCallbacks<List<News>> {
 
     private static final int LOADER_ID = 0;
     private String LOG_TAG = MainActivity.class.getName(), section = "home", ap="Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
@@ -30,7 +25,6 @@ public class MainActivity extends AppCompatActivity implements
     private ProgressBar mNewsProgress;
     protected ListView mNewsList;
 
-    // TODO: Fix RecylcerView issue of data in list items changing as views are scrolled/recycled.
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements
                 (LoaderManager.LoaderCallbacks) MainActivity.this);
 
         // Create a new newsPopulator that takes a rich (or otherwise empty) list of newsList as input
-        newsAdapter = new NewsAdapter(new ArrayList<News>(), MainActivity.this);
+        newsAdapter = new NewsAdapter(MainActivity.this, new ArrayList<News>());
 
         mNewsList.setAdapter(newsAdapter);
     }
@@ -108,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements
             mNewsProgress.setVisibility(View.GONE);
             mNewsList.setVisibility(View.VISIBLE);
 
-            newsAdapter = new NewsAdapter(data, MainActivity.this);
+            newsAdapter = new NewsAdapter(MainActivity.this, data);
             mNewsList.setAdapter(newsAdapter);
         } else {
             setEmptyView();
@@ -118,12 +112,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset (androidx.loader.content.Loader<List<News>> loader) {
         Log.i(LOG_TAG, "onLoaderReset() called");
-        newsAdapter = new NewsAdapter(new ArrayList<News>(), this);
+        newsAdapter = new NewsAdapter(this, new ArrayList<News>());
     }
 
-    @Override
-    public void onArticleClickListener (String link) {
-        // An implicit intent to open the article link in a browser
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link)));
-    }
 }
