@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">Headli9es</string>
     <string name="default_article_count">Total Articles: 0!</string>
-        <plurals name="articles_count">
-        <item quantity="zero">0 articles found.</item>
+    <string name="no_article_fetched">No articles could be fetched — none found!</string>
+
+    <plurals name="articles_count">
+        <item quantity="zero">@string/no_article_fetched</item>
         <item quantity="one">%1$02d article found.</item>
         <item quantity="other">Total articles: %1$02d</item>
     </plurals>
+
 </resources>

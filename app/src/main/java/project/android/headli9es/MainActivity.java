@@ -19,7 +19,11 @@ public class MainActivity extends AppCompatActivity implements
         LoaderCallbacks<List<News>> {
 
     private static final int LOADER_ID = 0;
-    private String LOG_TAG = MainActivity.class.getName(), section = "home", ap="Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
+    private static final String LOG_TAG = MainActivity.class.getName();
+
+    private final String NY_TIMES_API ="Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
+    private String NY_TimesSection = "home";
+
     private NewsAdapter newsAdapter;
     private ActivityMainBinding mMainBinding;
 
@@ -38,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements
         mMainBinding.listView.setEmptyView(mMainBinding.tvNoa);
 
         Bundle seek = new Bundle();
-        seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + section + ".json?api-key=" + ap);
+        seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection + ".json?api-key=" + NY_TIMES_API);
         loaderManager.initLoader(LOADER_ID, seek,
                 (LoaderManager.LoaderCallbacks) MainActivity.this);
     }
@@ -85,7 +89,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished (androidx.loader.content.Loader<List<News>> loader, List<News> data) {
         mMainBinding.pbNews.setVisibility(View.GONE);
-        newsAdapter.clear();
+        // TODO: LiveData + ViewModel; Pull-to-Refresh.
+        newsAdapter.notifyDataSetChanged();
 
         // If there is a valid list of {@link News}, then add them to the listPopulator's dataset.
         // This will trigger the RecyclerView to update.
@@ -94,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements
 
             newsAdapter.addAll(data);
         } else {
-            mMainBinding.tvNoa.setText("0 articles could be fetched!");
+            mMainBinding.tvNoa.setText(R.string.no_article_fetched);
         }
     }
 
