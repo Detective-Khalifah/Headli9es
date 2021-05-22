@@ -24,8 +24,8 @@ public class Search {
     /**
      * @param requestURL an initial, unready search query
      */
-    protected static List<News> lookUpVolumes (String requestURL) {
-        Log.i(LOG_TAG, "lookUpVolumes in action.");
+    protected static List<News> lookUpArticles (String requestURL) {
+        Log.i(LOG_TAG, "lookUpArticles in action.");
 
         // Create URL obj
         URL url = createURL(requestURL);
@@ -63,7 +63,7 @@ public class Search {
 
     /**
      * @param url
-     * @return
+     * @return JSON response from the request sent to server.
      * @throws IOException
      */
     private static String makeHTTPRequest (URL url) throws IOException {
@@ -82,8 +82,10 @@ public class Search {
             urlConn.setRequestMethod("GET");
             urlConn.connect();
 
-            // If the request was successful (response code 200), then read the input stream and parse the response.
-            switch (urlConn.getResponseCode() ) {
+            // If the request was successful (response code 200), then read the input stream and
+            // parse the response.
+            int responseCode = urlConn.getResponseCode();
+            switch (responseCode ) {
                 case HttpURLConnection.HTTP_OK:
                     Log.i(LOG_TAG, "from makeHTTPRequest: Response code 200");
 
@@ -94,16 +96,14 @@ public class Search {
 //                    Log.i(LOG_TAG, "from makeHTTPRequest JSONResponse:: " + JSONResponse);
                     break;
                 case HttpURLConnection.HTTP_UNAUTHORIZED:
-                    break;
-                case 429:
-                    Log.i(LOG_TAG, "from makeHTTPRequest response::");
+                case 429: Log.i(LOG_TAG, "from makeHTTPRequest response:: " + responseCode
+                            + "\nresponseMessage::" + urlConn.getResponseMessage());
                     break;
                 default:
-                    Log.i(LOG_TAG, "from makeHTTPRequest responseCode:: " + urlConn.getResponseCode());
-                    Log.i(LOG_TAG, "from makeHTTPRequest responseMessage:: " + urlConn.getResponseMessage());
-//                    Log.i(LOG_TAG, "from makeHTTPRequest ErrorStream:: " + urlConn.getErrorStream().read());
+                    Log.i(LOG_TAG, "from makeHTTPRequest responseCode:: " + urlConn.getResponseCode()
+                            + "\nresponseMessage::" + urlConn.getResponseMessage());
+                    Log.i(LOG_TAG, "from makeHTTPRequest ErrorStream:: " + urlConn.getErrorStream().read());
                     Log.i(LOG_TAG, "from makeHTTPRequest inputStream:: " + urlConn.getInputStream().read());
-//                    Toast.makeText(MainActivity.class, "Please enable network connection", Toast.LENGTH_LONG).show();
             }
         } catch (IOException e) {
 

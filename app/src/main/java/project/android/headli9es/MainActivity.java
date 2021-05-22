@@ -1,6 +1,8 @@
 package project.android.headli9es;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -59,9 +61,13 @@ public class MainActivity extends AppCompatActivity implements
         seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection
                 + ".json?api-key=" + NY_TIMES_API);
 
-        LoaderManager loaderManager = getSupportLoaderManager();
-        loaderManager.initLoader(LOADER_ID, seek,
-                (LoaderManager.LoaderCallbacks) MainActivity.this);
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connManager.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            LoaderManager loaderManager = getSupportLoaderManager();
+            loaderManager.initLoader(LOADER_ID, seek,
+                    (LoaderManager.LoaderCallbacks) MainActivity.this);
+        }
     }
 
     @Override
@@ -95,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements
                     Log.i(this.getClass().getName(), "Conditional check finds null");
                     return null;
                 } else {
-                    result = Search.lookUpVolumes(bundle.getString("link"));
+                    result = Search.lookUpArticles(bundle.getString("link"));
                     Log.i(this.getClass().getName(), "result List data: " + result);
                     return result;
                 }
