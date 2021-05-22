@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
 import project.android.headli9es.databinding.ActivityMainBinding;
 
@@ -30,6 +29,10 @@ public class MainActivity extends AppCompatActivity implements
 
     private final String NY_TIMES_API = "Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
     private String NY_TimesSection = "home";
+
+    private static final String GUARDIAN_API_BASE_URL = "https://";
+    private static final String NY_TIMES_BASE_URL = "https://api.nytimes.com/svc/topstories/v2/";
+    private static final String NEWS_API_BASE_URL = "https://";
 
     private NewsAdapter newsAdapter;
     private ActivityMainBinding mMainBinding;
@@ -57,9 +60,9 @@ public class MainActivity extends AppCompatActivity implements
 
         mMainBinding.tvArticlesCount.numArticles.setVisibility(View.GONE);
 
-        Bundle seek = new Bundle();
-        seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection
-                + ".json?api-key=" + NY_TIMES_API);
+        // TODO: Get url from Preference.
+        String url = "";
+        Bundle seek = generateURL(url);
 
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = connManager.getActiveNetworkInfo();
@@ -70,43 +73,42 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private Bundle generateURL (String apiCode) {
+        // TODO: Use preferences to make appropriate validation of {@link Bundle} content.
+        Bundle seek = new Bundle();
+        Uri base;
+        Uri.Builder uriBuilder;
+
+        switch (apiCode) {
+            case "NY_Times":
+                Log.i(LOG_TAG, "NY_Times api selected.");
+                seek.putString("code", apiCode);
+
+                base = Uri.parse(NY_TIMES_BASE_URL);
+                uriBuilder = base.buildUpon();
+                uriBuilder.appendPath(apiCode);
+
+                // Attach parsed New York Times URL to bundle.
+                seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + apiCode
+                        + ".json?api-key=" + NY_TIMES_API);
+                break;
+            case "News_Org":
+                Log.i(LOG_TAG, "newsapi.org api selected.");
+                seek.putString("code", apiCode);
+                seek.putString("link", "");
+                break;
+            default:
+                Log.i(LOG_TAG, "Default api chosen.");
+                seek.putString( "code", apiCode);
+                seek.putString("link", "");
+        }
+        return seek;
+    }
+
     @Override
     public Loader<List<News>> onCreateLoader (int i, final Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader() called");
-        return new AsyncTaskLoader<List<News>>(this) {
-            List<News> result;
-            String address = bundle.getString("link");
-
-            @Override
-            public void deliverResult (List<News> data) {
-                result = data;
-                super.deliverResult(data);
-            }
-
-            @Override
-            protected void onStartLoading () {
-                super.onStartLoading();
-                if (result != null) {
-                    deliverResult(result);
-                } else
-                    forceLoad();
-            }
-
-            @Override
-            public List<News> loadInBackground () {
-                Log.i(LOG_TAG, "This is loadInBackground. I received: " + address);
-
-                // Don't perform the request if there are no URLs, or the first URL is null.
-                if (address == null) {
-                    Log.i(this.getClass().getName(), "Conditional check finds null");
-                    return null;
-                } else {
-                    result = Search.lookUpArticles(bundle.getString("link"));
-                    Log.i(this.getClass().getName(), "result List data: " + result);
-                    return result;
-                }
-            }
-        };
+        return new NewsLoader(this, bundle);
     }
 
     @Override
