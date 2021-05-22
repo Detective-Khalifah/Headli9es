@@ -2,7 +2,8 @@
     <string name="app_name">Headli9es</string>
     <string name="default_article_count">Total Articles: 0!</string>
     <string name="no_article_fetched">No articles could be fetched — none found!</string>
-    <string name="Settings">news_settings_menu_title</string>
+
+    <string name="news_settings_menu_title">Settings</string>
 
     <plurals name="articles_count">
         <item quantity="zero">@string/no_article_fetched</item>
