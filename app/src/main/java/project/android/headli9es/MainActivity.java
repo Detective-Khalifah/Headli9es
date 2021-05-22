@@ -6,12 +6,15 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.loader.app.LoaderManager;
@@ -44,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
         // Create a new {@link NewsPopulator} that takes an empty, non-null {@link ArrayList} of
-        // {@link News} as input
+        // {@link News} as input.
         newsAdapter = new NewsAdapter(this, new ArrayList<News>());
 
         mMainBinding.listView.setAdapter(newsAdapter);
@@ -70,7 +73,39 @@ public class MainActivity extends AppCompatActivity implements
             LoaderManager loaderManager = getSupportLoaderManager();
             loaderManager.initLoader(LOADER_ID, seek,
                     (LoaderManager.LoaderCallbacks) MainActivity.this);
+        } else {
+            mMainBinding.pbNews.setVisibility(View.GONE);
+            // TODO: Set up Snackbar here.
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu (Menu menu) {
+        getMenuInflater().inflate(R.menu.api_settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item) {
+        if (item.getItemId() == R.id.news_settings_menu) {
+            startActivity(new Intent(this, ConfigActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // TODO: Register onPreferenceChangeListener and call generateURL() every time the
+    //  {@link Activity} is resumed to make a request to the appropriate server. Unregister the
+    //  listener otherwise.
+
+    @Override
+    protected void onPause () {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume () {
+        super.onResume();
     }
 
     private Bundle generateURL (String apiCode) {
@@ -88,18 +123,30 @@ public class MainActivity extends AppCompatActivity implements
                 uriBuilder = base.buildUpon();
                 uriBuilder.appendPath(apiCode);
 
-                // Attach parsed New York Times URL to bundle.
+                // Attach parsed New York Times API {@link URL} to bundle.
                 seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + apiCode
                         + ".json?api-key=" + NY_TIMES_API);
                 break;
             case "News_Org":
                 Log.i(LOG_TAG, "newsapi.org api selected.");
                 seek.putString("code", apiCode);
-                seek.putString("link", "");
+
+                base = Uri.parse(NEWS_API_BASE_URL);
+                uriBuilder = base.buildUpon();
+                uriBuilder.appendPath(apiCode);
+
+                // Attach parsed newsapi.org API {@link URL} to bundle.
+                seek.putString("link", uriBuilder.toString());
                 break;
             default:
                 Log.i(LOG_TAG, "Default api chosen.");
                 seek.putString( "code", apiCode);
+
+                base = Uri.parse(NY_TIMES_BASE_URL);
+                uriBuilder = base.buildUpon();
+                uriBuilder.appendPath(apiCode);
+
+                // Attach parsed Default news API {@link URL} to bundle.
                 seek.putString("link", "");
         }
         return seek;
@@ -114,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished (androidx.loader.content.Loader<List<News>> loader, List<News> data) {
         mMainBinding.pbNews.setVisibility(View.GONE);
+
         mMainBinding.tvArticlesCount.numArticles.setVisibility(View.VISIBLE);
 
         // TODO: LiveData + ViewModel; Pull-to-Refresh.
@@ -124,17 +172,19 @@ public class MainActivity extends AppCompatActivity implements
         if (data != null && !data.isEmpty()) {
             Log.i(LOG_TAG, "Data not empty in onPostExecute's check");
 
-            newsAdapter.addAll(data);
-
             // TODO: Find a way to set it automatically.
+            mMainBinding.tvNoa.setVisibility(View.VISIBLE);
             mMainBinding.tvArticlesCount.numArticles.setText(getResources().getQuantityString(
                     R.plurals.articles_count,
                     data.get(0).getArticlesNumber(),
                     data.get(0).getArticlesNumber())
             );
             Log.i(LOG_TAG, "Number of articles(List): " + data.get(0).getArticlesNumber());
+
+            newsAdapter.addAll(data);
         } else {
             mMainBinding.tvNoa.setText(R.string.no_article_fetched);
+            mMainBinding.tvNoa.setVisibility(View.VISIBLE);
         }
     }
 
