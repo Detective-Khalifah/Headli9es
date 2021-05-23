@@ -46,26 +46,16 @@ public class ConfigActivity extends AppCompatActivity {
         public boolean onPreferenceChange (Preference preference, Object newValue) {
             String preferenceValue = newValue.toString();
 
-            switch (preference.getTitleRes()) {
-                case R.string.settings_news_outlet_label:
-                    ListPreference nOutlet = (ListPreference) preference;
-                    final int indexOfSelectedOutlet = nOutlet.findIndexOfValue(preferenceValue);
-                    if (indexOfSelectedOutlet >= 0) {
-                        CharSequence[] sizes = nOutlet.getEntries();
-                        preference.setSummary(sizes[indexOfSelectedOutlet]);
-                        return true;
-                    }
-                case R.string.settings_page_size_label:
-                    ListPreference psize = (ListPreference) preference;
-                    final int indexOfSelectedSize = psize.findIndexOfValue(preferenceValue);
-                    if (indexOfSelectedSize >= 0) {
-                        CharSequence[] sizes = psize.getEntries();
-                        preference.setSummary(sizes[indexOfSelectedSize]);
-                    }
-                    return true;
-                default:
-                    return false;
-            }
+            if (preference instanceof ListPreference) {
+                ListPreference listPref = (ListPreference) preference;
+                final int indexOfSelectedValue = listPref.findIndexOfValue(preferenceValue);
+                if (indexOfSelectedValue >= 0) {
+                    CharSequence[] prefLabels = listPref.getEntries();
+                    preference.setSummary(prefLabels[indexOfSelectedValue]);
+                }
+                return true;
+            } else
+                return false;
         }
     }
 }
