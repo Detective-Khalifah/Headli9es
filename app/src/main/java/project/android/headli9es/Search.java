@@ -17,10 +17,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Search {
+public final class Search {
 
     private final static String LOG_TAG = Search.class.getName();
     private static String mAPICode;
+
+    // Make class non-instantiable; not a singleton either
+    private Search() {}
 
     /**
      * @param requestURL an initial, unready search query
