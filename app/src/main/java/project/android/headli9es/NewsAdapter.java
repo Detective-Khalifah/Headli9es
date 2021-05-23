@@ -11,7 +11,7 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import androidx.databinding.DataBindingUtil;
-import project.android.headli9es.databinding.ForecastBinding;
+import project.android.headli9es.databinding.ArticleBinding;
 
 public class NewsAdapter extends ArrayAdapter<News> {
 
@@ -19,7 +19,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
     private LayoutInflater inflater;
     private Context mAppContext;
 
-    protected ForecastBinding binder;
+    protected ArticleBinding binder;
 
     public NewsAdapter (Context context, List<News> objects) {
         super(context, 0, objects);
@@ -37,7 +37,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
 
         binder = DataBindingUtil.getBinding(convertView);
         if (binder == null)
-            binder = DataBindingUtil.inflate(inflater, R.layout.forecast, parent, false);
+            binder = DataBindingUtil.inflate(inflater, R.layout.article, parent, false);
 
 
         binder.setNews(currentArticle);
