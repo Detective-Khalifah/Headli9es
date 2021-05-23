@@ -36,8 +36,8 @@ public class Search {
 
         try {
             JSONResponse = makeHTTPRequest(url);
-        } catch (IOException ignored) {
-
+        } catch (IOException requestException) {
+            Log.i(LOG_TAG, "makeHTTPRequest(): " + requestException);
         }
 
         // Generate a list of newsList from fetched JSON
@@ -55,7 +55,7 @@ public class Search {
         try {
             url = new URL(stringURL);
         } catch (MalformedURLException mURLE) {
-
+            Log.i(LOG_TAG, mURLE.toString());
         }
         Log.i(LOG_TAG, "createURL::" + url);
         return url;
@@ -85,29 +85,21 @@ public class Search {
             // If the request was successful (response code 200), then read the input stream and
             // parse the response.
             int responseCode = urlConn.getResponseCode();
-            switch (responseCode) {
-                case HttpURLConnection.HTTP_OK:
-                    Log.i(LOG_TAG, "from makeHTTPRequest: Response code 200");
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                Log.i(LOG_TAG, "from makeHTTPRequest: Response code 200");
 
-                    inputStream = urlConn.getInputStream();
-//                    Log.i(LOG_TAG, "from makeHTTPRequest inputStream:: " + inputStream/*.read()*/);
+                inputStream = urlConn.getInputStream();
 
-                    JSONResponse = readFromStream(inputStream);
-//                    Log.i(LOG_TAG, "from makeHTTPRequest JSONResponse:: " + JSONResponse);
-                    break;
-                case HttpURLConnection.HTTP_UNAUTHORIZED:
-                case 429:
-                    Log.i(LOG_TAG, "from makeHTTPRequest response:: " + responseCode
-                            + "\nresponseMessage::" + urlConn.getResponseMessage());
-                    break;
-                default:
-                    Log.i(LOG_TAG, "from makeHTTPRequest responseCode:: " + urlConn.getResponseCode()
-                            + "\nresponseMessage::" + urlConn.getResponseMessage());
-                    Log.i(LOG_TAG, "from makeHTTPRequest ErrorStream:: " + urlConn.getErrorStream().read());
-                    Log.i(LOG_TAG, "from makeHTTPRequest inputStream:: " + urlConn.getInputStream().read());
+                JSONResponse = readFromStream(inputStream);
+            } else {
+                Log.i(LOG_TAG, "from makeHTTPRequest responseCode:: " + urlConn.getResponseCode()
+                        + "\nresponseMessage::" + urlConn.getResponseMessage()
+                        + "\nErrorStream:: " + urlConn.getErrorStream().read()
+                        + "\ninputStream:: " + urlConn.getInputStream().read());
+                getJSONErrorMessage(readFromStream(urlConn.getInputStream()));
             }
         } catch (IOException e) {
-
+            Log.i(LOG_TAG, "urlConn: " + e);
         } finally {
             if (urlConn != null)
                 urlConn.disconnect();
@@ -157,7 +149,7 @@ public class Search {
 
             switch (mAPICode) {
 
-                case "NY_TIMES":
+                case "NY_TIMES_API":
                     /** From root JSON OBJ:: {@link articlesNumber}, {@link articlesArray},
                      *  {@link copyrright}, {@link section}, {@link status}, {@link last_updated} */
                     // Number of articles
@@ -271,7 +263,7 @@ public class Search {
                             + "\nmessage: " + root.getString("message")
                     );
                 } catch (JSONException ex) {
-                    Log.i(LOG_TAG, ex.getMessage());
+                    Log.i(LOG_TAG, ex.toString());
                 }
             }
         }
@@ -280,4 +272,18 @@ public class Search {
         return news;
     }
 
+    private static void getJSONErrorMessage (String JSON) {
+        if (mAPICode.equals("NEWS_API")) {
+            JSONObject root = null;
+            try {
+                root = new JSONObject(JSON);
+                Log.i(LOG_TAG, "status: " + root.getString("status")
+                        + "\ncode: " + root.getString("code")
+                        + "\nmessage: " + root.getString("message")
+                );
+            } catch (JSONException ex) {
+                Log.i(LOG_TAG, ex.toString());
+            }
+        }
+    }
 }

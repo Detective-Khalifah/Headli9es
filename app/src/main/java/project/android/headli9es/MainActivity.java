@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,14 +32,21 @@ public class MainActivity extends AppCompatActivity implements
     private static final int LOADER_ID = 0;
     private static final String LOG_TAG = MainActivity.class.getName();
 
+    /** API Base {@link URL}s for the 3 {@link News} outlets. */
+    private static final String GUARDIAN_API_BASE_URL = "https://content.guardianapis.com/";
+    private static final String NY_TIMES_BASE_URL = "https://api.nytimes.com/svc/topstories/v2/";
+    private static final String NEWS_API_BASE_URL = "https://newsapi.org/v2/";
+
+    /** APIs' parameters & paths */
+    private static final String GUARDIAN_DEFAULT_PATH = "search";
+    private static final String NEWS_DEFAULT_PATH = "top-headlines";
+    private static final String NY_TIMES_DEFAULT_PATH = "";
     private final String NY_TIMES_API = "Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
     private String NY_TimesSection = "home";
 
-    private static final String GUARDIAN_API_BASE_URL = "https://";
-    private static final String NY_TIMES_BASE_URL = "https://api.nytimes.com/svc/topstories/v2/";
-    private static final String NEWS_API_BASE_URL = "https://";
-
     private NewsAdapter newsAdapter;
+
+    // Data binding blueprint/class of MainActivity
     private ActivityMainBinding mMainBinding;
 
     @Override
@@ -65,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements
         mMainBinding.tvArticlesCount.numArticles.setVisibility(View.GONE);
 
         // TODO: Get url from Preference.
-        String code = "NY_TIMES";
+        String code = "NEWS_API";
         Bundle seek = generateURL(code);
 
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
@@ -117,39 +125,44 @@ public class MainActivity extends AppCompatActivity implements
         Uri.Builder uriBuilder;
 
         switch (apiCode) {
-            case "NY_TIMES":
+            case "NY_TIMES_API":
                 Log.i(LOG_TAG, "NY_Times api selected.");
                 seek.putString("code", apiCode);
 
                 base = Uri.parse(NY_TIMES_BASE_URL);
                 uriBuilder = base.buildUpon();
-                uriBuilder.appendPath(apiCode);
+                uriBuilder.appendPath(NY_TIMES_DEFAULT_PATH);
 
-                // Attach parsed New York Times API {@link URL} to bundle.
+                // Attach apiCode & parsed New York Times API {@link URL} to bundle.
                 seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection
                         + ".json?api-key=" + NY_TIMES_API);
                 break;
-            case "News_Org":
+            case "NEWS_API":
                 Log.i(LOG_TAG, "newsapi.org api selected.");
-                seek.putString("code", apiCode);
 
                 base = Uri.parse(NEWS_API_BASE_URL);
                 uriBuilder = base.buildUpon();
-                uriBuilder.appendPath(apiCode);
+                uriBuilder.appendPath(NEWS_DEFAULT_PATH);
+                // "Required parameters are missing. Please set any of the following parameters and
+                // try again: sources, q, language, country, category."
+                uriBuilder.appendQueryParameter("country", "ng");
+                uriBuilder.appendQueryParameter("apiKey", "6111dbc091194e9d9c5ba3d413d15971");
 
-                // Attach parsed newsapi.org API {@link URL} to bundle.
+                // Attach apiCode & parsed newsapi.org API {@link URL} to bundle.
+                seek.putString("code", apiCode);
                 seek.putString("link", uriBuilder.toString());
                 break;
             default:
                 Log.i(LOG_TAG, "Default api chosen.");
-                seek.putString( "code", apiCode);
 
-                base = Uri.parse(NY_TIMES_BASE_URL);
+                base = Uri.parse(GUARDIAN_API_BASE_URL);
                 uriBuilder = base.buildUpon();
-                uriBuilder.appendPath(apiCode);
+                uriBuilder.appendPath(GUARDIAN_DEFAULT_PATH);
+                uriBuilder.appendQueryParameter("api-key", "f8981f58-9f90-4bd8-91d7-c5f241f8e433");
 
-                // Attach parsed Default news API {@link URL} to bundle.
-                seek.putString("link", "");
+                // Attach apiCode & parsed Default news API {@link URL} to bundle.
+                seek.putString("code", apiCode);
+                seek.putString("link", uriBuilder.toString());
         }
         return seek;
     }
