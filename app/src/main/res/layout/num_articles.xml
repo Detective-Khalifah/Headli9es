@@ -9,7 +9,7 @@
             type="project.android.headli9es.News" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -24,8 +24,8 @@
             android:longClickable="false"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:textColor="@android:color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:text="@{@plurals/articles_count(news.articlesNumber, news.articlesNumber, news.articlesNumber)}" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
 </layout>
