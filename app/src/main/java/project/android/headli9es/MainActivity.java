@@ -11,10 +11,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.loader.app.LoaderManager;
@@ -64,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements
         mMainBinding.tvArticlesCount.numArticles.setVisibility(View.GONE);
 
         // TODO: Get url from Preference.
-        String url = "";
-        Bundle seek = generateURL(url);
+        String code = "NY_TIMES";
+        Bundle seek = generateURL(code);
 
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = connManager.getActiveNetworkInfo();
@@ -76,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             mMainBinding.pbNews.setVisibility(View.GONE);
             // TODO: Set up Snackbar here.
+            Snackbar.make(mMainBinding.frameSnack, "No net access!",
+                    Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements
         Uri.Builder uriBuilder;
 
         switch (apiCode) {
-            case "NY_Times":
+            case "NY_TIMES":
                 Log.i(LOG_TAG, "NY_Times api selected.");
                 seek.putString("code", apiCode);
 
@@ -124,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements
                 uriBuilder.appendPath(apiCode);
 
                 // Attach parsed New York Times API {@link URL} to bundle.
-                seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + apiCode
+                seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection
                         + ".json?api-key=" + NY_TIMES_API);
                 break;
             case "News_Org":
