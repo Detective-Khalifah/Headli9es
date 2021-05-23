@@ -55,12 +55,13 @@ public class MainActivity extends AppCompatActivity implements
     private static LoaderManager loaderManager;
     
     // Data binding blueprint/class of MainActivity
-    private ActivityMainBinding mMainBinding;
+    private static ActivityMainBinding mMainBinding;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mMainBinding.setClicker(new ClickHandler());
 
         // Create a new {@link NewsPopulator} that takes an empty, non-null {@link ArrayList} of
         // {@link News} as input.
@@ -82,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements
 
         mMainBinding.tvArticlesCount.numArticles.setVisibility(View.GONE);
 
+        // Define String values declared as instance variables using getString() method --
+        // inaccessible outside context
         DEFAULT_OUTLET = getString(R.string.guardian_code);
         NEWS_OUTLET_PREFERNCE_KEY = getString(R.string.settings_news_outlet_key);
         PAGE_SIZE_PREFERENCE_KEY = getString(R.string.settings_page_size_key);
@@ -125,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements
      * {@link AppCompatActivity} is resumed to make a request to the appropriate server.
      * Unregister the listener otherwise.
      */
-
     @Override
     protected void onPause () {
         super.onPause();
@@ -176,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements
             uriBuilder.appendQueryParameter("country", "ng");
             uriBuilder.appendQueryParameter(getString(R.string.news_page_size_query_param),
                     newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
-            uriBuilder.appendQueryParameter("Authorization", "6111dbc091194e9d9c5ba3d413d15971");
+            uriBuilder.appendQueryParameter("apiKey", "6111dbc091194e9d9c5ba3d413d15971");
 
             // Attach apiCode & parsed newsapi.org API {@link URL} to bundle.
             seek.putString("code", apiCode);
@@ -237,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset (androidx.loader.content.Loader<List<News>> loader) {
         Log.i(LOG_TAG, "onLoaderReset() called");
-        newsAdapter.notifyDataSetInvalidated();
+        newsAdapter.clear();
     }
 
     /**
@@ -251,8 +253,9 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key) {
+        // Determine what {@link ListPreference} was modified, and restart loader to make new query.
         if(key.equals(NEWS_OUTLET_PREFERNCE_KEY) || key.equals(PAGE_SIZE_PREFERENCE_KEY)) {
-            newsAdapter.notifyDataSetInvalidated();
+            newsAdapter.clear();
 
             mMainBinding.pbNews.setVisibility(View.VISIBLE);
             mMainBinding.tvNoa.setVisibility(View.GONE);
@@ -263,6 +266,39 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             Snackbar.make(this, (View) mMainBinding.frameSnack, "Unknown preference!",
                     Snackbar.LENGTH_LONG);
+        }
+    }
+
+
+    public class ClickHandler implements View.OnClickListener {
+
+        /**
+         * Click hander for {@link News} outlet switch buttons.
+         * Discerns what button was clicked, assigns correct api based on that, and calls
+         * #onSharedPreferenceChanged() to restart the {@link Loader}, so new query could be made.
+         * the @param v clicked
+         */
+        @Override
+        public void onClick (View v) {
+            int id = v.getId();
+            String selectedAPI;
+
+            if (id == mMainBinding.btnNewsApi.getId()) {
+                selectedAPI = getString(R.string.news);
+                newsConfig.edit().putString(NEWS_OUTLET_PREFERNCE_KEY, getString(R.string.news_code)).apply();
+                onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERNCE_KEY);
+            } else if (id == mMainBinding.btnNyTimes.getId()) {
+                selectedAPI = getString(R.string.ny_times);
+                newsConfig.edit().putString(NEWS_OUTLET_PREFERNCE_KEY, getString(R.string.ny_times_code)).apply();
+                onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERNCE_KEY);
+            } else {
+                selectedAPI = getString(R.string.guardian);
+                newsConfig.edit().putString(NEWS_OUTLET_PREFERNCE_KEY, getString(R.string.guardian_code)).apply();
+                onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERNCE_KEY);
+            }
+
+            Snackbar.make(MainActivity.this, (View) mMainBinding.frameSnack,
+                    selectedAPI + " selected", Snackbar.LENGTH_LONG).show();
         }
     }
 }

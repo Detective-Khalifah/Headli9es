@@ -2,6 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <!-- {@link News} outlet switch buttons' handler -->
+        <variable
+            name="clicker"
+            type="project.android.headli9es.MainActivity.ClickHandler" />
+    </data>
+
     <!-- Root ViewGroup -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -41,27 +48,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:longClickable="false"
-                    android:text=""
                     app:layout_constraintLeft_toLeftOf="@id/tv_news_outlet_label"
-                    app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label"
+                    android:onClick="@{clicker::onClick}"
+                    android:text="THE GUARDIAN" />
 
                 <Button
                     android:id="@+id/btn_ny_times"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:longClickable="false"
-                    android:text=""
                     app:layout_constraintLeft_toRightOf="@id/btn_guardian"
-                    app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label"
+                    android:onClick="@{(view) -> clicker.onClick(view)}"
+                    android:text="NY TIMES" />
 
                 <Button
                     android:id="@+id/btn_news_api"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:longClickable="false"
-                    android:text=""
                     app:layout_constraintLeft_toRightOf="@id/btn_ny_times"
-                    app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label"
+                    android:onClick="@{clicker::onClick}"
+                    android:text="NEWS" />
 
             </LinearLayout>
 
