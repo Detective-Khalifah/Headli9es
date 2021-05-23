@@ -1,10 +1,12 @@
 package project.android.headli9es;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +29,7 @@ import project.android.headli9es.databinding.ActivityMainBinding;
 import static android.content.Intent.ACTION_VIEW;
 
 public class MainActivity extends AppCompatActivity implements
-        LoaderCallbacks<List<News>> {
+        LoaderCallbacks<List<News>>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final int LOADER_ID = 0;
     private static final String LOG_TAG = MainActivity.class.getName();
@@ -44,7 +46,13 @@ public class MainActivity extends AppCompatActivity implements
     private final String NY_TIMES_API = "Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
     private String NY_TimesSection = "home";
 
+    private static String DEFAULT_OUTLET, NEWS_OUTLET_PREFERNCE_KEY, PAGE_SIZE_PREFERENCE_KEY;
+
     private NewsAdapter newsAdapter;
+
+    private SharedPreferences newsConfig;
+
+    private static LoaderManager loaderManager;
 
     // Data binding blueprint/class of MainActivity
     private ActivityMainBinding mMainBinding;
@@ -59,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements
         // {@link News} as input.
         newsAdapter = new NewsAdapter(this, new ArrayList<News>());
 
+        // Get SharedPreferences link
+        newsConfig = PreferenceManager.getDefaultSharedPreferences(this);
+
         mMainBinding.listView.setAdapter(newsAdapter);
         mMainBinding.listView.setEmptyView(mMainBinding.tvNoa);
         mMainBinding.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -72,14 +83,20 @@ public class MainActivity extends AppCompatActivity implements
 
         mMainBinding.tvArticlesCount.numArticles.setVisibility(View.GONE);
 
-        // TODO: Get url from Preference.
-        String code = "NEWS_API";
+        DEFAULT_OUTLET = getString(R.string.guardian_code);
+        NEWS_OUTLET_PREFERNCE_KEY = getString(R.string.settings_news_outlet_key);
+        PAGE_SIZE_PREFERENCE_KEY = getString(R.string.settings_page_size_key);
+
+        // Get url from {@link SharedPreferences} and use it to generate appropriate {@link URL}
+        String code = newsConfig.getString(NEWS_OUTLET_PREFERNCE_KEY, DEFAULT_OUTLET);
         Bundle seek = generateURL(code);
 
+        // Check network state and start up {@link Loader}, passing generated {@link URL} if it's
+        // connected, otherwise notify via {@link Snackbar}
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = connManager.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnected()) {
-            LoaderManager loaderManager = getSupportLoaderManager();
+            loaderManager = getSupportLoaderManager();
             loaderManager.initLoader(LOADER_ID, seek,
                     (LoaderManager.LoaderCallbacks) MainActivity.this);
         } else {
@@ -104,40 +121,54 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    // TODO: Register onPreferenceChangeListener and call generateURL() every time the
-    //  {@link Activity} is resumed to make a request to the appropriate server. Unregister the
-    //  listener otherwise.
+    /**
+     * Register onPreferenceChangeListener and call generateURL() every time the
+     * {@link AppCompatActivity} is resumed to make a request to the appropriate server.
+     * Unregister the listener otherwise.
+     */
 
     @Override
     protected void onPause () {
         super.onPause();
+        newsConfig.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     protected void onResume () {
         super.onResume();
+        newsConfig.registerOnSharedPreferenceChangeListener(this);
     }
 
+    /**
+     * Use {@link Uri} & {@link Uri.Builder} to generate query {@link URL}.
+     * @param apiCode retrieved from the {@link SharedPreferences} instance.
+     * @return a bundle comprising the {@link URL} and discerned API code.
+     */
     private Bundle generateURL (String apiCode) {
-        // TODO: Use preferences to make appropriate validation of {@link Bundle} content.
         Bundle seek = new Bundle();
         Uri base;
         Uri.Builder uriBuilder;
 
+        final String NY_TIMES_CODE = getString(R.string.ny_times_code);
+        final String NEWS_CODE = getString(R.string.news_code);
+        final String GUARDIAN_CODE = getString(R.string.guardian_code);
+
         switch (apiCode) {
-            case "NY_TIMES_API":
+            case NY_TIMES_CODE:
                 Log.i(LOG_TAG, "NY_Times api selected.");
                 seek.putString("code", apiCode);
 
                 base = Uri.parse(NY_TIMES_BASE_URL);
                 uriBuilder = base.buildUpon();
                 uriBuilder.appendPath(NY_TIMES_DEFAULT_PATH);
+                uriBuilder.appendQueryParameter(getString(R.string.ny_times_page_size_query_param),
+                        newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
 
                 // Attach apiCode & parsed New York Times API {@link URL} to bundle.
                 seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection
                         + ".json?api-key=" + NY_TIMES_API);
                 break;
-            case "NEWS_API":
+            case NEWS_CODE:
                 Log.i(LOG_TAG, "newsapi.org api selected.");
 
                 base = Uri.parse(NEWS_API_BASE_URL);
@@ -146,18 +177,23 @@ public class MainActivity extends AppCompatActivity implements
                 // "Required parameters are missing. Please set any of the following parameters and
                 // try again: sources, q, language, country, category."
                 uriBuilder.appendQueryParameter("country", "ng");
+                uriBuilder.appendQueryParameter(getString(R.string.news_page_size_query_param),
+                        newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
                 uriBuilder.appendQueryParameter("apiKey", "6111dbc091194e9d9c5ba3d413d15971");
 
                 // Attach apiCode & parsed newsapi.org API {@link URL} to bundle.
                 seek.putString("code", apiCode);
                 seek.putString("link", uriBuilder.toString());
                 break;
-            default:
+            case GUARDIAN_CODE:
+            default: // GUARDIAN_CODE used
                 Log.i(LOG_TAG, "Default api chosen.");
 
                 base = Uri.parse(GUARDIAN_API_BASE_URL);
                 uriBuilder = base.buildUpon();
                 uriBuilder.appendPath(GUARDIAN_DEFAULT_PATH);
+                uriBuilder.appendQueryParameter(getString(R.string.guardian_page_size_query_param),
+                        newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
                 uriBuilder.appendQueryParameter("api-key", "f8981f58-9f90-4bd8-91d7-c5f241f8e433");
 
                 // Attach apiCode & parsed Default news API {@link URL} to bundle.
@@ -209,4 +245,29 @@ public class MainActivity extends AppCompatActivity implements
         newsAdapter.notifyDataSetInvalidated();
     }
 
+    /**
+     * Restart {@link Loader} if the {@link SharedPreferences} key is recognised; show
+     * {@link android.widget.ProgressBar} & hide the empty {@link View}
+     * {@link android.widget.TextView}, and call #generateUrl(Bundle) to determine API to query,
+     * then restart {@link Loader}. If case is otherwise, display a {@link Snackbar} notifying an
+     * unknown {@link SharedPreferences}.
+     * @param sharedPreferences received
+     * @param key of the {@link SharedPreferences} changed
+     */
+    @Override
+    public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key) {
+        if(key.equals(NEWS_OUTLET_PREFERNCE_KEY) || key.equals(PAGE_SIZE_PREFERENCE_KEY)) {
+            newsAdapter.notifyDataSetInvalidated();
+
+            mMainBinding.pbNews.setVisibility(View.VISIBLE);
+            mMainBinding.tvNoa.setVisibility(View.GONE);
+
+            getSupportLoaderManager().restartLoader(LOADER_ID,
+                    generateURL(newsConfig.getString(NEWS_OUTLET_PREFERNCE_KEY, DEFAULT_OUTLET)),
+                    this);
+        } else {
+            Snackbar.make(this, (View) mMainBinding.frameSnack, "Unknown preference!",
+                    Snackbar.LENGTH_LONG);
+        }
+    }
 }
