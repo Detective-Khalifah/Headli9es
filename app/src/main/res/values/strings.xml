@@ -12,4 +12,21 @@
         <item quantity="other">Total articles: %1$02d</item>
     </plurals>
 
+    <!-- String values (also labels) of {@link News} page size -->
+    <string name="ten">10</string>
+    <string name="twenty">20</string>
+    <string name="thirty">30</string>
+    <string name="forty">40</string>
+    <string name="fifty">50</string>
+    <string name="sixty">60</string>
+    <string name="seventy">70</string>
+    <string name="eighty">80</string>
+    <string name="ninety">90</string>
+    <string name="hundred">100</string>
+    <string name="settings_page_size_key">page_size</string>
+    <string name="settings_page_size_label">Page Size</string>
+    <string name="settings_news_outlet_key">news_outlet</string>
+    <string name="settings_news_outlet_label">@string/news_outlet</string>
+    <string name="settings_summary">Configurations for preferred news outlet.</string>
+
 </resources>
