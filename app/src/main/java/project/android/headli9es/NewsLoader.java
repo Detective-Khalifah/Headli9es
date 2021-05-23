@@ -44,7 +44,9 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
             Log.i(this.getClass().getName(), "Conditional check finds null");
             return null;
         } else {
-            result = Search.lookUpArticles(newsURL, apiCode);
+            // Call static method #lookUpArticles, passing context passed when class was
+            // instantiated by call to super(context), the {@link URL} & API code
+            result = Search.lookupArticles(getContext(), newsURL, apiCode);
             Log.i(this.getClass().getName(), "result List data: " + result);
             return result;
         }
