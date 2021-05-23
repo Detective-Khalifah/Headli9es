@@ -76,8 +76,7 @@ public class MainActivity extends AppCompatActivity implements
                     (LoaderManager.LoaderCallbacks) MainActivity.this);
         } else {
             mMainBinding.pbNews.setVisibility(View.GONE);
-            // TODO: Set up Snackbar here.
-            Snackbar.make(mMainBinding.frameSnack, "No net access!",
+            Snackbar.make(this, mMainBinding.frameSnack, "No net access!",
                     Snackbar.LENGTH_LONG).show();
         }
     }
