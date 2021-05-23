@@ -24,7 +24,7 @@
             android:longClickable="false"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:textColor="@android:color/black"
-            android:text="@{@plurals/articles_count(news.articlesNumber, news.articlesNumber, news.articlesNumber)}" />
+            android:text="@{@plurals/articles_count(news.totalArticles, news.totalArticles, news.totalArticles)}" />
 
     </FrameLayout>
 

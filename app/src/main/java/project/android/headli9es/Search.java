@@ -20,11 +20,12 @@ import java.util.List;
 public class Search {
 
     private final static String LOG_TAG = Search.class.getName();
+    private static String mAPICode;
 
     /**
      * @param requestURL an initial, unready search query
      */
-    protected static List<News> lookUpArticles (String requestURL) {
+    protected static List<News> lookUpArticles (String requestURL, String apiCode) {
         Log.i(LOG_TAG, "lookUpArticles in action.");
 
         // Create URL obj
@@ -40,10 +41,9 @@ public class Search {
         }
 
         // Generate a list of newsList from fetched JSON
-        List<News> articles = extractNYTData(JSONResponse);
-//        List<News> articles = extractJSONData(JSONResponse);
+        mAPICode = apiCode;
 //        Log.i(LOG_TAG, "SearchResult List is made of: " + articles);
-        return articles;
+        return extractJSONData(JSONResponse);
     }
 
     /**
@@ -85,7 +85,7 @@ public class Search {
             // If the request was successful (response code 200), then read the input stream and
             // parse the response.
             int responseCode = urlConn.getResponseCode();
-            switch (responseCode ) {
+            switch (responseCode) {
                 case HttpURLConnection.HTTP_OK:
                     Log.i(LOG_TAG, "from makeHTTPRequest: Response code 200");
 
@@ -96,7 +96,8 @@ public class Search {
 //                    Log.i(LOG_TAG, "from makeHTTPRequest JSONResponse:: " + JSONResponse);
                     break;
                 case HttpURLConnection.HTTP_UNAUTHORIZED:
-                case 429: Log.i(LOG_TAG, "from makeHTTPRequest response:: " + responseCode
+                case 429:
+                    Log.i(LOG_TAG, "from makeHTTPRequest response:: " + responseCode
                             + "\nresponseMessage::" + urlConn.getResponseMessage());
                     break;
                 default:
@@ -136,7 +137,7 @@ public class Search {
         return myList.toString();
     }
 
-    private static List<News> extractNYTData (String newsJSONResponse) {
+    private static List<News> extractJSONData (String newsJSONResponse) {
 
         // If the JSON String is empty or null, then return early.
         if (TextUtils.isEmpty(newsJSONResponse))
@@ -154,74 +155,125 @@ public class Search {
             // Create a JSON object from the SAMPLE_JSON_RESPONSE string
             JSONObject rootJSONObj = new JSONObject(newsJSONResponse);
 
-            /** From root JSON OBJ:: {@link articlesNumber}, {@link articlesArray}, {@link copyrright}, {@link section}, {@link status}, {@link last_updated} */
-            // Number of articles
-            int articlesNumber = rootJSONObj.getInt("num_results");
+            switch (mAPICode) {
 
-            // Extract the JSONArray associated with the key called "results"
-            // which represents a list newsList.
-            JSONArray articlesArray = rootJSONObj.getJSONArray("results");
+                case "NY_TIMES":
+                    /** From root JSON OBJ:: {@link articlesNumber}, {@link articlesArray},
+                     *  {@link copyrright}, {@link section}, {@link status}, {@link last_updated} */
+                    // Number of articles
+                    int articlesNumber = rootJSONObj.getInt("num_results");
 
-            // For each article in the articlesArray, create a {@link news} object
-            for (int i = 0; i < articlesArray.length(); i++) {
-                JSONObject currentArticle = articlesArray.getJSONObject(i);
+                    // Extract the JSONArray associated with the key called "results"
+                    // which represents a list newsList.
+                    JSONArray results = rootJSONObj.getJSONArray("results");
 
-                /* Extract content */
-                String content = currentArticle.optString("abstract");
-                Log.i(LOG_TAG, "content:: " + content);
+                    // For each article in the results, create a {@link news} object
+                    for (int i = 0; i < results.length(); i++) {
+                        JSONObject currentArticle = results.getJSONObject(i);
 
-                /* Extract an excerpt of news article */
-                String description = currentArticle.optJSONArray("des_facet").toString();
-//                for (int j = 0; j < description.length(); j++) {
-//                    description.getString(j);
-//                }
+                        // Extract content
+                        String description = currentArticle.optString("abstract");
+                        Log.i(LOG_TAG, "description:: " + description);
 
-                /* Extract publish_date*/
-                String publish_date = currentArticle.optString("published_date");
-                Log.i(LOG_TAG, "publish_date:: " + publish_date);
+                        /* Extract publish_date*/
+                        String publish_date = currentArticle.optString("published_date");
+                        Log.i(LOG_TAG, "publish_date:: " + publish_date);
 
-                /* Extract news sourceName */
-                String sourceName = currentArticle.optString("byline");
-                Log.i(LOG_TAG, "sourceName:: " + sourceName);
+                        // Extract news sourceName
+                        String sourceName = currentArticle.optString("byline");
+                        Log.i(LOG_TAG, "sourceName:: " + sourceName);
 
-                /* Extract title */
-                String title = currentArticle.optString("title");
-                Log.i(LOG_TAG, "title:: " + title);
+                        // Extract title
+                        String title = currentArticle.optString("title");
+                        Log.i(LOG_TAG, "title:: " + title);
 
-                /* Extract news link - a uri for the current article,
-                 which can be used to uniquely open article info online */
-                String web_page = currentArticle.optString("short_url");
-                Log.i(LOG_TAG, "web_page:: " + web_page);
+                        // Extract news link - a uri for the current article, which can be used to
+                        // uniquely open article info online
+                        String web_page = currentArticle.optString("url");
+                        Log.i(LOG_TAG, "web_page:: " + web_page);
 
-                /** Thumbnail deets
-                 * multimedia array, has 5 image objects:: format (height, width)
-                 * 0 => superJumbo (1366, 2048)
-                 * 1 => Standard Thumbnail (75, 75)
-                 * 2 => thumbLarge (150, 150)
-                 * 3 => mediumThreeByTwo210 (140, 210)
-                 * 4 => Normal (127, 190)
-                 * */
-                JSONArray images = currentArticle.getJSONArray("multimedia");
-                String thumbnailURL = images.getJSONObject(1).optString("url");
-                String thumbnailCaption = images.getJSONObject(1).optString("caption");
-                String thumbnailSrc = images.getJSONObject(1).optString("copyright");
-                Log.i(LOG_TAG, "Image Thumbnail::" + "\nthumbnailURL"+ thumbnailURL + "\nthumbnailCaption" + thumbnailCaption + "\nthumbnailSrc" + thumbnailSrc);
+                        /** Thumbnail deets
+                         * multimedia array, has 5 image objects:: format (height, width)
+                         * 0 => superJumbo (1366, 2048)
+                         * 1 => Standard Thumbnail (75, 75)
+                         * 2 => thumbLarge (150, 150)
+                         * 3 => mediumThreeByTwo210 (140, 210)
+                         * 4 => Normal (127, 190)
+                         * */
+                        // TODO: Get different thumbnail depending on screen size.
+                        JSONArray images = currentArticle.getJSONArray("multimedia");
+                        String thumbnailURL = images.getJSONObject(1).optString("url");
+                        String thumbnailCaption = images.getJSONObject(1).optString("caption");
+                        String thumbnailSrc = images.getJSONObject(1).optString("copyright");
+                        Log.i(LOG_TAG, "Image Thumbnail::" + "\nthumbnailURL" + thumbnailURL + "\nthumbnailCaption" + thumbnailCaption + "\nthumbnailSrc" + thumbnailSrc);
 
-                news.add(new News(articlesNumber,
-                        content,
-                        description,
-                        publish_date,
-                        sourceName,
-                        title,
-                        web_page));
+                        news.add(new News(title, publish_date, web_page, sourceName,
+                                description, articlesNumber));
+                    }
+                    break;
+
+                case "NEWS_API":
+                    int totalResults = rootJSONObj.getInt("totalResults");
+
+                    JSONArray articles1 = rootJSONObj.getJSONArray("articles");
+                    for (int i = 0; i < articles1.length(); i++) {
+                        JSONObject currentResult = articles1.getJSONObject(i);
+
+                        String source = currentResult.getJSONObject("source").getString("name");
+                        String title = currentResult.getString("title");
+                        String description = currentResult.getString("description");
+                        String date = currentResult.getString("publishedAt");
+                        String page = currentResult.getString("url");
+
+                        // TODO: check if it's not null.
+                        String img = currentResult.getString("urlToImage");
+
+                        news.add(new News(title, date, page, source,
+                                description, totalResults));
+                    }
+                    break;
+
+                default: // Guardian API
+                    JSONObject response = rootJSONObj.getJSONObject("response");
+
+                    int totalArticles = response.getInt("total");
+                    int totalPages = response.getInt("pages");
+
+                    JSONArray articles = response.getJSONArray("results");
+
+                    for (int i = 0; i < articles.length(); i++) {
+                        JSONObject currentArticle = articles.getJSONObject(i);
+
+                        String category = currentArticle.getString("sectionName");
+                        String date = (String) currentArticle.get("webPublicationDate");
+
+                        String title = currentArticle.getString("webTitle");
+                        String page = currentArticle.getString("webUrl");
+
+                        news.add(new News(title, date, page, category,
+                                totalArticles, totalPages));
+
+                    }
             }
 
-        } catch (
-                JSONException e) {
-            // If an error is thrown when executing any of the above statements in the "try" block,
+        } catch (JSONException e) {
+            // If an error is thrown when executing any of the above statements in the switch
+            // statement of the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
             Log.i(LOG_TAG, "Problem parsing the JSON results_page", e);
+            if (mAPICode.equals("NEWS_API")) {
+                JSONObject root = null;
+                try {
+                    root = new JSONObject(newsJSONResponse);
+                    Log.i(LOG_TAG, "status: " + root.getString("status")
+                            + "\ncode: " + root.getString("code")
+                            + "\nmessage: " + root.getString("message")
+                    );
+                } catch (JSONException ex) {
+                    Log.i(LOG_TAG, ex.getMessage());
+                }
+            }
         }
 
         // Return the list (polymorphed ArrayList) of newsList

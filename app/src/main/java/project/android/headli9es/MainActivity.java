@@ -179,10 +179,10 @@ public class MainActivity extends AppCompatActivity implements
             mMainBinding.tvNoa.setVisibility(View.VISIBLE);
             mMainBinding.tvArticlesCount.numArticles.setText(getResources().getQuantityString(
                     R.plurals.articles_count,
-                    data.get(0).getArticlesNumber(),
-                    data.get(0).getArticlesNumber())
+                    data.get(0).getTotalArticles(),
+                    data.get(0).getTotalArticles())
             );
-            Log.i(LOG_TAG, "Number of articles(List): " + data.get(0).getArticlesNumber());
+            Log.i(LOG_TAG, "Number of articles(List): " + data.get(0).getTotalArticles());
 
             newsAdapter.addAll(data);
         } else {

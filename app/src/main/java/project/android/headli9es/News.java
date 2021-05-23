@@ -2,63 +2,78 @@ package project.android.headli9es;
 
 public class News {
 
-    private int articlesNumber;
-    private String content; //
+    private int totalArticles; // total number of articles for the query made
+    private int totalPages; // total number of pages for the query made
+    private String title; // article header
+    private String date; // publication date
+    private String page; // {@link URL} of the news article
+    private String source; // publisher/writer of the article
     private String description; //
-    private String date; //
-    private String page; // Main
-    private String source; //
-    private String title;
+    private String content; // full article text content
+    private String category; // category/topic of the article
 
-    public News (int theArticlesNumber, String theContent, String theDescription, String theDate,
-                 String theSource, String theTitle, String thePage) {
-        this.articlesNumber = theArticlesNumber;
-        this.content = theContent;
-        this.description = theDescription;
-        this.date = theDate;
-        this.source = theSource;
+    /**
+     * Constructor for {@link News} from NEWS API or New York Times API -- https://newsapi.org
+     * @param theTitle
+     * @param theDate
+     * @param thePage
+     * @param categoryOrSource
+     * @param theDescription
+     * @param theArticlesNumber
+     */
+    public News (String theTitle, String theDate, String thePage, String categoryOrSource,
+                 String theDescription, int theArticlesNumber) {
         this.title = theTitle;
         this.page = thePage;
+        this.date = theDate;
+        this.source = categoryOrSource;
+        this.description = theDescription;
+        this.totalArticles = theArticlesNumber;
     }
 
-    public int getArticlesNumber() {return this.articlesNumber;}
-    public void setArticlesNumber(int numArticles) {this.articlesNumber = numArticles;}
+    /**
+     * Constructor for {@link News} from Guardian API -- https://content.guardianapis.com/
+     * @param title
+     * @param date
+     * @param page
+     * @param category
+     * @param articlesNumber
+     * @param totalPages
+     */
+    public News (String title, String date, String page, String category, int articlesNumber, int totalPages) {
+        this.title = title;
+        this.date = date;
+        this.page = page;
+        this.category = category;
+        this.totalArticles = articlesNumber;
+        this.totalPages = totalPages;
+    }
+
+    public String getTitle(){ return this.title; }
+    public void setTitle(String title){ this.title = title; }
+
+    public String getDate() { return this.date; }
+    public void setDate(String date){ this.date = date; }
+
+    public String getPage () { return page; }
+    public void setPage (String page) { this.page = page; }
+
+    public String getSource () { return source; }
+    public void setSource(String source) { this.source = source; }
+
+    public String getDescription() { return this.description; }
+    public void setDescription (String description) { this.description = description; }
 
     public String getContent (){return this.content;}
     public void setContent (String content){this.content = content;}
 
-    public String getSource () {
-        return source;
-    }
-    public void setSource(String source) {
-        this.source = source;
-    }
+    public String getCategory () { return category; }
+    public void setCategory (String category) { this.category = category; }
 
-    public String getDescription() {
-        return this.description;
-    }
-    public void setDescription (String description) {
-        this.description = description;
-    }
+    public int getTotalArticles () {return this.totalArticles;}
+    public void setTotalArticles (int numArticles) {this.totalArticles = numArticles;}
 
-    public String getDate() {
-        return this.date;
-    }
-    public void setDate(String date){
-        this.date = date;
-    }
+    public int getTotalPages () { return totalPages; }
 
-    public String getTitle(){
-        return this.title;
-    }
-    public void setTitle(String title){
-        this.title = title;
-    }
-
-    public String getPage () {
-        return page;
-    }
-    public void setPage (String page) {
-        this.page = page;
-    }
+    public void setTotalPages (int totalPages) { this.totalPages = totalPages; }
 }
