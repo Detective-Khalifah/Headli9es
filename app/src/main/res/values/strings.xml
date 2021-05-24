@@ -1,9 +1,90 @@
 <resources>
     <string name="app_name">Headli9es</string>
     <string name="default_article_count">Total Articles: 0!</string>
-        <plurals name="articles_count">
-        <item quantity="zero">0 articles found.</item>
-        <item quantity="one">%1$02d article found.</item>
-        <item quantity="other">Total articles: %1$02d</item>
+    <string name="no_article_fetched">No articles could be fetched — none found!</string>
+
+    <string name="news_settings_menu_title">Settings</string>
+    <string name="news_outlet">News Outlet</string>
+
+    <plurals name="articles_count">
+        <item quantity="zero" translatable="false">@string/no_article_fetched</item>
+        <item quantity="one" translatable="false">%1$02d article found.</item>
+        <item quantity="other" translatable="false">Total articles: %1$02d</item>
     </plurals>
+    <plurals name="news_page_size">
+        <item quantity="other">Page Size: %d</item>
+    </plurals>
+
+    <!-- String values (also labels) of {@link News} page size -->
+    <string name="ten" translatable="false">10</string>
+    <string name="twenty" translatable="false">20</string>
+    <string name="thirty" translatable="false">30</string>
+    <string name="forty" translatable="false">40</string>
+    <string name="fifty" translatable="false">50</string>
+    <string name="sixty" translatable="false">60</string>
+    <string name="seventy" translatable="false">70</string>
+    <string name="eighty" translatable="false">80</string>
+    <string name="ninety" translatable="false">90</string>
+    <string name="hundred" translatable="false">100</string>
+
+    <string name="settings_page_size_key" translatable="false">page_size</string>
+    <string name="settings_page_size_label">Page Size</string>
+
+    <string name="settings_news_outlet_key" translatable="false">news_outlet</string>
+    <string name="settings_news_outlet_label">@string/news_outlet</string>
+
+    <string name="settings_summary">Configurations for preferred news outlet.</string>
+
+    <!-- Labels displayed to user in {@link ConfigActivity} -->
+    <string name="guardian" translatable="false">The Guardian OpenPlatform (default)</string>
+    <string name="news" translatable="false">NEWS API</string>
+    <string name="ny_times" translatable="false">New York Times API</string>
+
+    <!-- API CODES FOR THE NEWS OUTLETS; USED LOCALLY IN APP TO DETERMINE PATHWAYS -->
+    <string name="guardian_code" translatable="false">GUARDIAN</string>
+    <string name="news_code" translatable="false">NEWS</string>
+    <string name="ny_times_code" translatable="false">NY_TIMES</string>
+
+    <!-- Parameters for the {@link News} outlets; passed in {@link URL} as query paramets -->
+    <string name="guardian_page_size_query_param" translatable="false">page-size</string>
+    <string name="news_page_size_query_param" translatable="false">pageSize</string>
+    <string name="ny_times_page_size_query_param" translatable="false">num_results</string>
+
+    <!-- Labels displayed on {@link News} outlet buttons -->
+    <string name="btn_new_york_times">New York TIMES</string>
+    <string name="btn_news">NEWS</string>
+    <string name="btn_the_guardian">THE GUARDIAN</string>
+
+    <!-- Page Size array passed as query parameter to the various {@link News} outlets -->
+    <string-array name="number_of_articles_in_single_page">
+        <item>@string/ten</item>
+        <item>@string/twenty</item>
+        <item>@string/thirty</item>
+        <item>@string/forty</item>
+        <item>@string/fifty</item>
+        <item>@string/sixty</item>
+        <item>@string/seventy</item>
+        <item>@string/eighty</item>
+        <item>@string/ninety</item>
+        <item>@string/hundred</item>
+    </string-array>
+    <!-- Parameter names pre-defined by each {@link News} outlet -->
+    <string-array name="page_size_parameter_name">
+        <item>@string/guardian_page_size_query_param</item>
+        <item>@string/news_page_size_query_param</item>
+        <item>@string/ny_times_page_size_query_param</item>
+    </string-array>
+
+    <!-- News Outlet labels & api codes for local validation -->
+    <string-array name="news_outlet_labels">
+        <item>@string/guardian</item>
+        <item>@string/news</item>
+        <item>@string/ny_times</item>
+    </string-array>
+    <string-array name="news_outlet_keys">
+        <item>@string/guardian_code</item>
+        <item>@string/news_code</item>
+        <item>@string/ny_times_code</item>
+    </string-array>
+
 </resources>

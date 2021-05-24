@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
     <data>
+
         <variable
             name="news"
             type="project.android.headli9es.News" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/num_articles"
+            android:id="@+id/tv_num_articles"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -22,10 +22,23 @@
             android:layout_marginTop="8dp"
             android:clickable="false"
             android:longClickable="false"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:text="@{@plurals/articles_count(news.totalArticles, news.totalArticles, news.totalArticles)}"
             android:textColor="@android:color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:text="@{@plurals/articles_count(news.articlesNumber, news.articlesNumber, news.articlesNumber)}" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_page_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:clickable="false"
+            android:longClickable="false"
+            android:text="@{@plurals/news_page_size(news.pageSize)}"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
 </layout>
