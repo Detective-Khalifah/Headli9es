@@ -47,6 +47,11 @@
     <string name="news_page_size_query_param" translatable="false">totalResults</string>
     <string name="ny_times_page_size_query_param" translatable="false">num_results</string>
 
+    <!-- Labels displayed on {@link News} outlet buttons -->
+    <string name="btn_new_york_times">New York TIMES</string>
+    <string name="btn_news">NEWS</string>
+    <string name="btn_the_guardian">THE GUARDIAN</string>
+
     <!-- Page Size array passed as query parameter to the various {@link News} outlets -->
     <string-array name="number_of_articles_in_single_page">
         <item>@string/ten</item>

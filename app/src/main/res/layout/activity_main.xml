@@ -51,7 +51,7 @@
                     app:layout_constraintLeft_toLeftOf="@id/tv_news_outlet_label"
                     app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label"
                     android:onClick="@{clicker::onClick}"
-                    android:text="THE GUARDIAN" />
+                    android:text="@string/btn_the_guardian" />
 
                 <Button
                     android:id="@+id/btn_ny_times"
@@ -61,7 +61,7 @@
                     app:layout_constraintLeft_toRightOf="@id/btn_guardian"
                     app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label"
                     android:onClick="@{(view) -> clicker.onClick(view)}"
-                    android:text="NY TIMES" />
+                    android:text="@string/btn_new_york_times" />
 
                 <Button
                     android:id="@+id/btn_news_api"
@@ -71,7 +71,7 @@
                     app:layout_constraintLeft_toRightOf="@id/btn_ny_times"
                     app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label"
                     android:onClick="@{clicker::onClick}"
-                    android:text="NEWS" />
+                    android:text="@string/btn_news" />
 
             </LinearLayout>
 
