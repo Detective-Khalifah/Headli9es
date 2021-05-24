@@ -30,10 +30,9 @@ public final class Search {
     }
 
     /**
-     *
-     * @param context of the app
+     * @param context    of the app
      * @param requestURL an initial, un-parsed search query
-     * @param apiCode used locally as code to determine selected {@link News} API.
+     * @param apiCode    used locally as code to determine selected {@link News} API.
      * @return a {@link List} of {@link News} objects.
      */
     protected static List<News> lookupArticles (Context context, String requestURL, String apiCode) {
@@ -236,8 +235,30 @@ public final class Search {
                     String title = currentArticle.getString("webTitle");
                     String page = currentArticle.getString("webUrl");
 
-                    news.add(new News(title, date, page, category,
-                            totalArticles, pageSize));
+                    // Parse source names if they exist, otherwise pass null to the constructor; in
+                    // which case article.xml replaces the value with 'news.category'. Dunno why
+                    // simple 'for(int j = 0; j < sourceArray.length(); j++)' loop won't work here,
+                    // had to resort to manual traversing.
+                    JSONArray sourceArray = currentArticle.getJSONArray("tags");
+                    StringBuilder source = null;
+                    int sourceSize = sourceArray.length(), sourcePosition = 0;
+
+                    if (sourceSize > 0) {
+                        source = new StringBuilder();
+                        source.append("By ");
+                        while (sourceSize > sourcePosition) {
+                            JSONObject sourceObject = sourceArray.getJSONObject(sourcePosition);
+                            String sourceName = sourceObject.getString("webTitle");
+                            if (sourceSize > 1 && sourcePosition > 0)
+                                source.append(", ").append(sourceName);
+                            else
+                                source.append(sourceName);
+                            sourcePosition++;
+                        }
+                    }
+                    news.add(new News(title, date, page, (source == null ? null : source.toString()),
+                            category, totalArticles, pageSize));
+                    Log.i(LOG_TAG, "source:: " + source);
 
                 }
             }

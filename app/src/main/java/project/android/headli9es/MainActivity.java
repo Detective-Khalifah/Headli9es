@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         mMainBinding.linArticlesCount.tvNumArticles.setVisibility(GONE);
+        mMainBinding.linArticlesCount.tvPageSize.setVisibility(GONE);
 
         // Define String values declared as instance variables using getString() method --
         // inaccessible outside context
@@ -263,8 +265,10 @@ public class MainActivity extends AppCompatActivity implements
             uriBuilder.appendPath(GUARDIAN_DEFAULT_PATH);
             uriBuilder.appendQueryParameter(getString(R.string.guardian_page_size_query_param),
                     newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
+            uriBuilder.appendQueryParameter("show-tags", "contributor");
             uriBuilder.appendQueryParameter(GUARDIAN_AUTH_TAG, GUARDIAN_AUTH);
 
+            Log.i(MainActivity.class.getName(), "url:: " + uriBuilder);
             // Attach apiCode & parsed Default news API {@link URL} to bundle.
             seek.putString("code", apiCode);
             seek.putString("link", uriBuilder.toString());

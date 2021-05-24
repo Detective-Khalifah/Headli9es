@@ -35,14 +35,16 @@ public class News {
      * @param title
      * @param date
      * @param page
+     * @param source
      * @param category
      * @param articlesNumber
      * @param pageSize
      */
-    public News (String title, String date, String page, String category, int articlesNumber, int pageSize) {
+    public News (String title, String date, String page, String source, String category, int articlesNumber, int pageSize) {
         this.title = title;
         this.date = date;
         this.page = page;
+        this.source = source;
         this.category = category;
         this.totalArticles = articlesNumber;
         this.pageSize = pageSize;
