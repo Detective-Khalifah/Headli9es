@@ -156,12 +156,11 @@ public class MainActivity extends AppCompatActivity implements
         mMainBinding.pbNews.setVisibility(GONE);
         mMainBinding.linArticlesCount.tvNumArticles.setVisibility(View.VISIBLE);
 
-        newsAdapter.notifyDataSetChanged();
+        newsAdapter.clear();
 
         // If there is a valid list of {@link News}, then add them to the {@link NewsAdapter}'s dataset.
         // This will trigger the {@link ListView} to update.
         if (data != null && !data.isEmpty()) {
-
             mMainBinding.tvNoa.setVisibility(View.VISIBLE);
             mMainBinding.linArticlesCount.tvNumArticles.setText(getResources().getQuantityString(
                     R.plurals.articles_count,

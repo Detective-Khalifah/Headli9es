@@ -163,8 +163,9 @@ public final class Search {
             JSONObject rootJSONObj = new JSONObject(newsJSONResponse);
 
             if (mAPICode.equals(mAppContext.getString(R.string.ny_times_code))) {
-                /** From root JSON OBJ:: {@link articlesNumber}, {@link articlesArray},
-                 *  {@link copyrright}, {@link section}, {@link status}, {@link last_updated} */
+                /* From root JSON OBJ:: {@link articlesNumber}, {@link articlesArray},
+                   {@link copyright}, {@link section}, {@link status}, {@link last_updated} */
+
                 // Number of articles
                 int articlesNumber = rootJSONObj.getInt("num_results");
 
@@ -235,10 +236,10 @@ public final class Search {
                     String title = currentArticle.getString("webTitle");
                     String page = currentArticle.getString("webUrl");
 
-                    // Parse source names if they exist, otherwise pass null to the constructor; in
-                    // which case article.xml replaces the value with 'news.category'. Dunno why
-                    // simple 'for(int j = 0; j < sourceArray.length(); j++)' loop won't work here,
-                    // had to resort to manual traversing.
+                    /* Parse source names if they exist, otherwise pass null to the constructor; in
+                    which case article.xml replaces the value with 'news.category'. Dunno why simple
+                    'for(int j = 0; j < sourceArray.length(); j++)' loop won't work here, had to
+                    resort to manual traversing. */
                     JSONArray sourceArray = currentArticle.getJSONArray("tags");
                     StringBuilder source = null;
                     int sourceSize = sourceArray.length(), sourcePosition = 0;
@@ -258,7 +259,6 @@ public final class Search {
                     }
                     news.add(new News(title, date, page, (source == null ? null : source.toString()),
                             category, totalArticles, pageSize));
-                    Log.i(LOG_TAG, "source:: " + source);
 
                 }
             }
@@ -270,7 +270,7 @@ public final class Search {
             // with the message from the exception.
             Log.i(LOG_TAG, "Problem parsing the JSON results_page", e);
             if (mAPICode.equals("NEWS_API")) {
-                JSONObject root = null;
+                JSONObject root;
                 try {
                     root = new JSONObject(newsJSONResponse);
                     Log.i(LOG_TAG, "status: " + root.getString("status")
