@@ -2,7 +2,6 @@ package project.android.headli9es;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import project.android.headli9es.databinding.ArticleBinding;
 
 public class NewsAdapter extends ArrayAdapter<News> {
 
-    private static final String LOG_TAG = NewsAdapter.class.getName();
     private LayoutInflater inflater;
     private Context mAppContext;
 
@@ -23,7 +21,6 @@ public class NewsAdapter extends ArrayAdapter<News> {
 
     public NewsAdapter (Context context, List<News> objects) {
         super(context, 0, objects);
-        Log.d(LOG_TAG, "This is NewsPopulator.");
         mAppContext = context;
     }
 
@@ -38,7 +35,6 @@ public class NewsAdapter extends ArrayAdapter<News> {
         binder = DataBindingUtil.getBinding(convertView);
         if (binder == null)
             binder = DataBindingUtil.inflate(inflater, R.layout.article, parent, false);
-
 
         binder.setNews(currentArticle);
         binder.executePendingBindings();
