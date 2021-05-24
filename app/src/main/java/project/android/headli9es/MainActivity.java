@@ -36,17 +36,24 @@ public class MainActivity extends AppCompatActivity implements
 
     /** API Base {@link URL}s for the 3 {@link News} outlets. */
     private static final String GUARDIAN_API_BASE_URL = "https://content.guardianapis.com/";
-    private static final String NY_TIMES_BASE_URL = "https://api.nytimes.com/svc/topstories/v2/";
+    private static final String NY_TIMES_HOST = "https://api.nytimes.com";
+    private static final String NY_TIMES_BASE_PATH = "/svc/topstories/v2";
     private static final String NEWS_API_BASE_URL = "https://newsapi.org/v2/";
 
     /** APIs' parameters & paths */
     private static final String GUARDIAN_DEFAULT_PATH = "search";
     private static final String NEWS_DEFAULT_PATH = "top-headlines";
-    private static final String NY_TIMES_DEFAULT_PATH = "";
-    private final String NY_TIMES_API = "Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
-    private String NY_TimesSection = "home";
+    private String NY_TIMES_DEFAULT_SECTION = "home.json";
 
-    private static String DEFAULT_OUTLET, NEWS_OUTLET_PREFERNCE_KEY, PAGE_SIZE_PREFERENCE_KEY;
+    /** Authorisation */
+    private static final String GUARDIAN_AUTH = "f8981f58-9f90-4bd8-91d7-c5f241f8e433";
+    private static final String GUARDIAN_AUTH_TAG = "api-key";
+    private static final String NEWS_AUTH = "6111dbc091194e9d9c5ba3d413d15971";
+    private static final String NEWS_AUTH_TAG = "apiKey";
+    private static final String NY_TIMES_AUTH = "Vd6bJTsQALVX8fguWnFtpd37xZjch8f5";
+    private static final String NY_TIMES_AUTH_TAG = "api-key";
+
+    private static String DEFAULT_OUTLET, NEWS_OUTLET_PREFERENCE_KEY, PAGE_SIZE_PREFERENCE_KEY;
 
     private NewsAdapter newsAdapter;
 
@@ -86,11 +93,11 @@ public class MainActivity extends AppCompatActivity implements
         // Define String values declared as instance variables using getString() method --
         // inaccessible outside context
         DEFAULT_OUTLET = getString(R.string.guardian_code);
-        NEWS_OUTLET_PREFERNCE_KEY = getString(R.string.settings_news_outlet_key);
+        NEWS_OUTLET_PREFERENCE_KEY = getString(R.string.settings_news_outlet_key);
         PAGE_SIZE_PREFERENCE_KEY = getString(R.string.settings_page_size_key);
 
         // Get url from {@link SharedPreferences} and use it to generate appropriate {@link URL}
-        String code = newsConfig.getString(NEWS_OUTLET_PREFERNCE_KEY, DEFAULT_OUTLET);
+        String code = newsConfig.getString(NEWS_OUTLET_PREFERENCE_KEY, DEFAULT_OUTLET);
         Bundle seek = generateURL(code);
 
         // Check network state and start up {@link Loader}, passing generated {@link URL} if it's
@@ -194,14 +201,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key) {
         // Determine what {@link ListPreference} was modified, and restart loader to make new query.
-        if(key.equals(NEWS_OUTLET_PREFERNCE_KEY) || key.equals(PAGE_SIZE_PREFERENCE_KEY)) {
+        if(key.equals(NEWS_OUTLET_PREFERENCE_KEY) || key.equals(PAGE_SIZE_PREFERENCE_KEY)) {
             newsAdapter.clear();
 
             mMainBinding.pbNews.setVisibility(View.VISIBLE);
             mMainBinding.tvNoa.setVisibility(View.GONE);
 
             getSupportLoaderManager().restartLoader(LOADER_ID,
-                    generateURL(newsConfig.getString(NEWS_OUTLET_PREFERNCE_KEY, DEFAULT_OUTLET)),
+                    generateURL(newsConfig.getString(NEWS_OUTLET_PREFERENCE_KEY, DEFAULT_OUTLET)),
                     this);
         } else {
             Snackbar.make(this, (View) mMainBinding.frameSnack, "Unknown preference!",
@@ -225,17 +232,18 @@ public class MainActivity extends AppCompatActivity implements
 
         if (apiCode.equals(NY_TIMES_CODE)) {
             Log.i(LOG_TAG, "NY_TIMES api selected.");
-            seek.putString("code", apiCode);
 
-            base = Uri.parse(NY_TIMES_BASE_URL);
+            base = Uri.parse(NY_TIMES_HOST);
             uriBuilder = base.buildUpon();
-            uriBuilder.appendPath(NY_TIMES_DEFAULT_PATH);
+            uriBuilder.appendPath(NY_TIMES_BASE_PATH);
+            uriBuilder.appendPath(NY_TIMES_DEFAULT_SECTION);
             uriBuilder.appendQueryParameter(getString(R.string.ny_times_page_size_query_param),
                     newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
+            uriBuilder.appendQueryParameter(NY_TIMES_AUTH_TAG, NY_TIMES_AUTH);
 
             // Attach apiCode & parsed New York Times API {@link URL} to bundle.
-            seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection
-                    + ".json?api-key=" + NY_TIMES_API);
+            seek.putString("code", apiCode);
+            seek.putString("link", uriBuilder.toString());
             disableSelectedButton(apiCode);
         } else if (apiCode.equals(NEWS_CODE)) {
             Log.i(LOG_TAG, "newsapi.org api selected.");
@@ -248,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements
             uriBuilder.appendQueryParameter("country", "ng");
             uriBuilder.appendQueryParameter(getString(R.string.news_page_size_query_param),
                     newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
-            uriBuilder.appendQueryParameter("apiKey", "6111dbc091194e9d9c5ba3d413d15971");
+            uriBuilder.appendQueryParameter(NEWS_AUTH_TAG, NEWS_AUTH);
 
             // Attach apiCode & parsed newsapi.org API {@link URL} to bundle.
             seek.putString("code", apiCode);
@@ -262,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements
             uriBuilder.appendPath(GUARDIAN_DEFAULT_PATH);
             uriBuilder.appendQueryParameter(getString(R.string.guardian_page_size_query_param),
                     newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
-            uriBuilder.appendQueryParameter("api-key", "f8981f58-9f90-4bd8-91d7-c5f241f8e433");
+            uriBuilder.appendQueryParameter(GUARDIAN_AUTH_TAG, GUARDIAN_AUTH);
 
             // Attach apiCode & parsed Default news API {@link URL} to bundle.
             seek.putString("code", apiCode);
@@ -312,16 +320,16 @@ public class MainActivity extends AppCompatActivity implements
 
             if (id == mMainBinding.btnNewsApi.getId()) {
                 selectedAPI = getString(R.string.news);
-                newsConfig.edit().putString(NEWS_OUTLET_PREFERNCE_KEY, getString(R.string.news_code)).apply();
-                onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERNCE_KEY);
+                newsConfig.edit().putString(NEWS_OUTLET_PREFERENCE_KEY, getString(R.string.news_code)).apply();
+                onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERENCE_KEY);
             } else if (id == mMainBinding.btnNyTimes.getId()) {
                 selectedAPI = getString(R.string.ny_times);
-                newsConfig.edit().putString(NEWS_OUTLET_PREFERNCE_KEY, getString(R.string.ny_times_code)).apply();
-                onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERNCE_KEY);
+                newsConfig.edit().putString(NEWS_OUTLET_PREFERENCE_KEY, getString(R.string.ny_times_code)).apply();
+                onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERENCE_KEY);
             } else {
                 selectedAPI = getString(R.string.guardian);
-                newsConfig.edit().putString(NEWS_OUTLET_PREFERNCE_KEY, getString(R.string.guardian_code)).apply();
-                onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERNCE_KEY);
+                newsConfig.edit().putString(NEWS_OUTLET_PREFERENCE_KEY, getString(R.string.guardian_code)).apply();
+                onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERENCE_KEY);
             }
 
             Snackbar.make(MainActivity.this, (View) mMainBinding.frameSnack,
