@@ -15,7 +15,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/num_articles"
+            android:id="@+id/tv_num_articles"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -38,7 +38,7 @@
             android:longClickable="false"
             android:textSize="16sp"
             android:textColor="@android:color/black"
-            android:text="@{@string/news_page_size(news.pageSize)}" />
+            android:text="@{@plurals/news_page_size(news.pageSize)}" />
 
     </LinearLayout>
 

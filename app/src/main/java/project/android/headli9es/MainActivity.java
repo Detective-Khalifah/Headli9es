@@ -27,6 +27,7 @@ import androidx.loader.content.Loader;
 import project.android.headli9es.databinding.ActivityMainBinding;
 
 import static android.content.Intent.ACTION_VIEW;
+import static android.view.View.GONE;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderCallbacks<List<News>>, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        mMainBinding.tvArticlesCount.numArticles.setVisibility(View.GONE);
+        mMainBinding.linArticlesCount.tvNumArticles.setVisibility(GONE);
 
         // Define String values declared as instance variables using getString() method --
         // inaccessible outside context
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements
             loaderManager.initLoader(LOADER_ID, seek,
                     (LoaderManager.LoaderCallbacks) MainActivity.this);
         } else {
-            mMainBinding.pbNews.setVisibility(View.GONE);
+            mMainBinding.pbNews.setVisibility(GONE);
             Snackbar.make(this, mMainBinding.frameSnack, "No net access!",
                     Snackbar.LENGTH_LONG).show();
         }
@@ -154,10 +155,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLoadFinished (androidx.loader.content.Loader<List<News>> loader, List<News> data) {
-        mMainBinding.pbNews.setVisibility(View.GONE);
-
-        mMainBinding.tvArticlesCount.numArticles.setVisibility(View.VISIBLE);
+    public void onLoadFinished (Loader<List<News>> loader, List<News> data) {
+        mMainBinding.pbNews.setVisibility(GONE);
+        mMainBinding.linArticlesCount.tvNumArticles.setVisibility(View.VISIBLE);
 
         // TODO: LiveData + ViewModel; Pull-to-Refresh.
         newsAdapter.notifyDataSetChanged();
@@ -169,12 +169,20 @@ public class MainActivity extends AppCompatActivity implements
 
             // TODO: Find a way to set the two values - articles count & page size- automatically.
             mMainBinding.tvNoa.setVisibility(View.VISIBLE);
-            mMainBinding.tvArticlesCount.numArticles.setText(getResources().getQuantityString(
+            mMainBinding.linArticlesCount.tvNumArticles.setText(getResources().getQuantityString(
                     R.plurals.articles_count,
                     data.get(0).getTotalArticles(),
                     data.get(0).getTotalArticles())
             );
-            mMainBinding.tvArticlesCount.tvPageSize.setText(getString(R.string.news_page_size, data.get(0).getPageSize()));
+            mMainBinding.linArticlesCount.tvPageSize.setText(getResources().getQuantityString(
+                    R.plurals.news_page_size,
+                    data.get(0).getPageSize(),
+                    data.get(0).getPageSize()
+            ));
+            if (data.get(0).getPageSize() < 1)
+                mMainBinding.linArticlesCount.tvPageSize.setVisibility(GONE);
+            else
+                mMainBinding.linArticlesCount.tvPageSize.setVisibility(View.VISIBLE);
 
             Log.i(LOG_TAG, "Number of articles(List): " + data.get(0).getTotalArticles());
 
@@ -207,7 +215,9 @@ public class MainActivity extends AppCompatActivity implements
             newsAdapter.clear();
 
             mMainBinding.pbNews.setVisibility(View.VISIBLE);
-            mMainBinding.tvNoa.setVisibility(View.GONE);
+            mMainBinding.linArticlesCount.tvNumArticles.setVisibility(GONE);
+            mMainBinding.linArticlesCount.tvPageSize.setVisibility(GONE);
+            mMainBinding.tvNoa.setVisibility(GONE);
 
             getSupportLoaderManager().restartLoader(LOADER_ID,
                     generateURL(newsConfig.getString(NEWS_OUTLET_PREFERENCE_KEY, DEFAULT_OUTLET)),

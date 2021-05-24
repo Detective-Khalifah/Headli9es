@@ -83,7 +83,7 @@
                 app:layout_constraintTop_toBottomOf="@id/lin_news_outlet">
 
                 <include
-                    android:id="@+id/tv_articles_count"
+                    android:id="@+id/lin_articles_count"
                     layout="@layout/num_articles" />
 
             </FrameLayout>
