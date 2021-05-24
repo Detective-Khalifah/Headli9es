@@ -140,66 +140,6 @@ public class MainActivity extends AppCompatActivity implements
         newsConfig.registerOnSharedPreferenceChangeListener(this);
     }
 
-    /**
-     * Use {@link Uri} & {@link Uri.Builder} to generate query {@link URL}.
-     * @param apiCode retrieved from the {@link SharedPreferences} instance.
-     * @return a bundle comprising the {@link URL} and discerned API code.
-     */
-    private Bundle generateURL (String apiCode) {
-        Bundle seek = new Bundle();
-        Uri base;
-        Uri.Builder uriBuilder;
-
-        final String NY_TIMES_CODE = getString(R.string.ny_times_code);
-        final String NEWS_CODE = getString(R.string.news_code);
-        final String GUARDIAN_CODE = getString(R.string.guardian_code);
-
-        if (apiCode.equals(NY_TIMES_CODE)) {
-            Log.i(LOG_TAG, "NY_TIMES api selected.");
-            seek.putString("code", apiCode);
-
-            base = Uri.parse(NY_TIMES_BASE_URL);
-            uriBuilder = base.buildUpon();
-            uriBuilder.appendPath(NY_TIMES_DEFAULT_PATH);
-            uriBuilder.appendQueryParameter(getString(R.string.ny_times_page_size_query_param),
-                    newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
-
-            // Attach apiCode & parsed New York Times API {@link URL} to bundle.
-            seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection
-                    + ".json?api-key=" + NY_TIMES_API);
-        } else if (apiCode.equals(NEWS_CODE)) {
-            Log.i(LOG_TAG, "newsapi.org api selected.");
-
-            base = Uri.parse(NEWS_API_BASE_URL);
-            uriBuilder = base.buildUpon();
-            uriBuilder.appendPath(NEWS_DEFAULT_PATH);
-            // "Required parameters are missing. Please set any of the following parameters and
-            // try again: sources, q, language, country, category."
-            uriBuilder.appendQueryParameter("country", "ng");
-            uriBuilder.appendQueryParameter(getString(R.string.news_page_size_query_param),
-                    newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
-            uriBuilder.appendQueryParameter("apiKey", "6111dbc091194e9d9c5ba3d413d15971");
-
-            // Attach apiCode & parsed newsapi.org API {@link URL} to bundle.
-            seek.putString("code", apiCode);
-            seek.putString("link", uriBuilder.toString());
-        } else { // GUARDIAN_API_CODE:
-            Log.i(LOG_TAG, "Default api chosen.");
-
-            base = Uri.parse(GUARDIAN_API_BASE_URL);
-            uriBuilder = base.buildUpon();
-            uriBuilder.appendPath(GUARDIAN_DEFAULT_PATH);
-            uriBuilder.appendQueryParameter(getString(R.string.guardian_page_size_query_param),
-                    newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
-            uriBuilder.appendQueryParameter("api-key", "f8981f58-9f90-4bd8-91d7-c5f241f8e433");
-
-            // Attach apiCode & parsed Default news API {@link URL} to bundle.
-            seek.putString("code", apiCode);
-            seek.putString("link", uriBuilder.toString());
-        }
-        return seek;
-    }
-
     @Override
     public Loader<List<News>> onCreateLoader (int i, final Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader() called");
@@ -269,6 +209,93 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Use {@link Uri} & {@link Uri.Builder} to generate query {@link URL}.
+     * @param apiCode retrieved from the {@link SharedPreferences} instance.
+     * @return a bundle comprising the {@link URL} and discerned API code.
+     */
+    private Bundle generateURL (String apiCode) {
+        Bundle seek = new Bundle();
+        Uri base;
+        Uri.Builder uriBuilder;
+
+        final String NY_TIMES_CODE = getString(R.string.ny_times_code);
+        final String NEWS_CODE = getString(R.string.news_code);
+        final String GUARDIAN_CODE = getString(R.string.guardian_code);
+
+        if (apiCode.equals(NY_TIMES_CODE)) {
+            Log.i(LOG_TAG, "NY_TIMES api selected.");
+            seek.putString("code", apiCode);
+
+            base = Uri.parse(NY_TIMES_BASE_URL);
+            uriBuilder = base.buildUpon();
+            uriBuilder.appendPath(NY_TIMES_DEFAULT_PATH);
+            uriBuilder.appendQueryParameter(getString(R.string.ny_times_page_size_query_param),
+                    newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
+
+            // Attach apiCode & parsed New York Times API {@link URL} to bundle.
+            seek.putString("link", "https://api.nytimes.com/svc/topstories/v2/" + NY_TimesSection
+                    + ".json?api-key=" + NY_TIMES_API);
+            disableSelectedButton(apiCode);
+        } else if (apiCode.equals(NEWS_CODE)) {
+            Log.i(LOG_TAG, "newsapi.org api selected.");
+
+            base = Uri.parse(NEWS_API_BASE_URL);
+            uriBuilder = base.buildUpon();
+            uriBuilder.appendPath(NEWS_DEFAULT_PATH);
+            // "Required parameters are missing. Please set any of the following parameters and
+            // try again: sources, q, language, country, category."
+            uriBuilder.appendQueryParameter("country", "ng");
+            uriBuilder.appendQueryParameter(getString(R.string.news_page_size_query_param),
+                    newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
+            uriBuilder.appendQueryParameter("apiKey", "6111dbc091194e9d9c5ba3d413d15971");
+
+            // Attach apiCode & parsed newsapi.org API {@link URL} to bundle.
+            seek.putString("code", apiCode);
+            seek.putString("link", uriBuilder.toString());
+            disableSelectedButton(apiCode);
+        } else { // GUARDIAN_API_CODE:
+            Log.i(LOG_TAG, "Default api chosen.");
+
+            base = Uri.parse(GUARDIAN_API_BASE_URL);
+            uriBuilder = base.buildUpon();
+            uriBuilder.appendPath(GUARDIAN_DEFAULT_PATH);
+            uriBuilder.appendQueryParameter(getString(R.string.guardian_page_size_query_param),
+                    newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
+            uriBuilder.appendQueryParameter("api-key", "f8981f58-9f90-4bd8-91d7-c5f241f8e433");
+
+            // Attach apiCode & parsed Default news API {@link URL} to bundle.
+            seek.putString("code", apiCode);
+            seek.putString("link", uriBuilder.toString());
+            disableSelectedButton(apiCode);
+        }
+        return seek;
+    }
+
+
+    /**
+     * Disable the selected outlet's button from getting re-clicked, to avoid data waste when it's
+     * already being clicked, and it's API is being consumed.
+     * @param API of the outlet button clicked.
+     */
+    private void disableSelectedButton (String API) {
+        if (API.equals(getString(R.string.ny_times_code))) {
+            mMainBinding.btnNyTimes.setClickable(false);
+
+            mMainBinding.btnGuardian.setClickable(true);
+            mMainBinding.btnNewsApi.setClickable(true);
+        } else if (API.equals(getString(R.string.news_code))) {
+            mMainBinding.btnNewsApi.setClickable(false);
+
+            mMainBinding.btnNyTimes.setClickable(true);
+            mMainBinding.btnGuardian.setClickable(true);
+        } else {
+            mMainBinding.btnGuardian.setClickable(false);
+
+            mMainBinding.btnNewsApi.setClickable(true);
+            mMainBinding.btnNyTimes.setClickable(true);
+        }
+    }
 
     public class ClickHandler implements View.OnClickListener {
 
@@ -300,5 +327,6 @@ public class MainActivity extends AppCompatActivity implements
             Snackbar.make(MainActivity.this, (View) mMainBinding.frameSnack,
                     selectedAPI + " selected", Snackbar.LENGTH_LONG).show();
         }
+
     }
 }
