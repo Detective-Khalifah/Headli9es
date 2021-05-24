@@ -3,7 +3,7 @@ package project.android.headli9es;
 public class News {
 
     private int totalArticles; // total number of articles for the query made
-    private int totalPages; // total number of pages for the query made
+    private int pageSize; // total number of articles on current page
     private String title; // article header
     private String date; // publication date
     private String page; // {@link URL} of the news article
@@ -37,15 +37,15 @@ public class News {
      * @param page
      * @param category
      * @param articlesNumber
-     * @param totalPages
+     * @param pageSize
      */
-    public News (String title, String date, String page, String category, int articlesNumber, int totalPages) {
+    public News (String title, String date, String page, String category, int articlesNumber, int pageSize) {
         this.title = title;
         this.date = date;
         this.page = page;
         this.category = category;
         this.totalArticles = articlesNumber;
-        this.totalPages = totalPages;
+        this.pageSize = pageSize;
     }
 
     public String getTitle(){ return this.title; }
@@ -69,6 +69,6 @@ public class News {
     public int getTotalArticles () {return this.totalArticles;}
     public void setTotalArticles (int numArticles) {this.totalArticles = numArticles;}
 
-    public int getTotalPages () { return totalPages; }
-    public void setTotalPages (int totalPages) { this.totalPages = totalPages; }
+    public int getPageSize () { return pageSize; }
+    public void setPageSize (int pageSize) { this.pageSize = pageSize; }
 }

@@ -167,13 +167,15 @@ public class MainActivity extends AppCompatActivity implements
         if (data != null && !data.isEmpty()) {
             Log.i(LOG_TAG, "Data not empty in onPostExecute's check");
 
-            // TODO: Find a way to set it automatically.
+            // TODO: Find a way to set the two values - articles count & page size- automatically.
             mMainBinding.tvNoa.setVisibility(View.VISIBLE);
             mMainBinding.tvArticlesCount.numArticles.setText(getResources().getQuantityString(
                     R.plurals.articles_count,
                     data.get(0).getTotalArticles(),
                     data.get(0).getTotalArticles())
             );
+            mMainBinding.tvArticlesCount.tvPageSize.setText(getString(R.string.news_page_size, data.get(0).getPageSize()));
+
             Log.i(LOG_TAG, "Number of articles(List): " + data.get(0).getTotalArticles());
 
             newsAdapter.addAll(data);

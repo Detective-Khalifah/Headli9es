@@ -246,7 +246,7 @@ public final class Search {
                 JSONObject response = rootJSONObj.getJSONObject("response");
 
                 int totalArticles = response.getInt("total");
-                int totalPages = response.getInt("pages");
+                int pageSize = response.getInt("pageSize");
 
                 JSONArray articles = response.getJSONArray("results");
 
@@ -260,7 +260,7 @@ public final class Search {
                     String page = currentArticle.getString("webUrl");
 
                     news.add(new News(title, date, page, category,
-                            totalArticles, totalPages));
+                            totalArticles, pageSize));
 
                 }
             }
