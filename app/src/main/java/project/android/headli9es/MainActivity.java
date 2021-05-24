@@ -235,16 +235,13 @@ public class MainActivity extends AppCompatActivity implements
 
             base = Uri.parse(NY_TIMES_HOST);
             uriBuilder = base.buildUpon();
-            uriBuilder.appendPath(NY_TIMES_BASE_PATH);
+            uriBuilder.appendEncodedPath(NY_TIMES_BASE_PATH);
             uriBuilder.appendPath(NY_TIMES_DEFAULT_SECTION);
-            uriBuilder.appendQueryParameter(getString(R.string.ny_times_page_size_query_param),
-                    newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10"));
             uriBuilder.appendQueryParameter(NY_TIMES_AUTH_TAG, NY_TIMES_AUTH);
 
             // Attach apiCode & parsed New York Times API {@link URL} to bundle.
             seek.putString("code", apiCode);
             seek.putString("link", uriBuilder.toString());
-            disableSelectedButton(apiCode);
         } else if (apiCode.equals(NEWS_CODE)) {
             Log.i(LOG_TAG, "newsapi.org api selected.");
 
@@ -261,7 +258,6 @@ public class MainActivity extends AppCompatActivity implements
             // Attach apiCode & parsed newsapi.org API {@link URL} to bundle.
             seek.putString("code", apiCode);
             seek.putString("link", uriBuilder.toString());
-            disableSelectedButton(apiCode);
         } else { // GUARDIAN_API_CODE:
             Log.i(LOG_TAG, "Default api chosen.");
 
@@ -275,8 +271,8 @@ public class MainActivity extends AppCompatActivity implements
             // Attach apiCode & parsed Default news API {@link URL} to bundle.
             seek.putString("code", apiCode);
             seek.putString("link", uriBuilder.toString());
-            disableSelectedButton(apiCode);
         }
+        disableSelectedButton(apiCode);
         return seek;
     }
 

@@ -44,7 +44,7 @@
 
     <!-- Parameters for the {@link News} outlets; passed in {@link URL} as query paramets -->
     <string name="guardian_page_size_query_param" translatable="false">pageSize</string>
-    <string name="news_page_size_query_param" translatable="false">totalResults</string>
+    <string name="news_page_size_query_param" translatable="false">pageSize</string>
     <string name="ny_times_page_size_query_param" translatable="false">num_results</string>
 
     <!-- Labels displayed on {@link News} outlet buttons -->

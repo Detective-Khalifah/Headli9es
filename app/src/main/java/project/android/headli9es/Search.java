@@ -34,6 +34,9 @@ public final class Search {
     protected static List<News> lookupArticles (Context context, String requestURL, String apiCode) {
         Log.i(LOG_TAG, "lookUpArticles in action.");
 
+        mAPICode = apiCode;
+        mAppContext = context;
+
         // Create URL obj
         URL url = createURL(requestURL);
 
@@ -47,8 +50,6 @@ public final class Search {
         }
 
         // Generate a list of newsList from fetched JSON
-        mAPICode = apiCode;
-        mAppContext = context;
 //        Log.i(LOG_TAG, "SearchResult List is made of: " + articles);
         return extractJSONData(JSONResponse);
     }
@@ -87,11 +88,19 @@ public final class Search {
         try {
             urlConn = (HttpURLConnection) url.openConnection();
             urlConn.setRequestMethod("GET");
+
+            // Headers to fix NEWS API returning error 403
+            if (mAPICode.equals(mAppContext.getString(R.string.news_code))) {
+                urlConn.setRequestProperty("User-Agent", "newsapi.org (detective.khalifah.dtcfscd@gmail.com)");
+                urlConn.setRequestProperty("Accept", "application/geo+json;version=1");
+            }
+
             urlConn.connect();
 
             // If the request was successful (response code 200), then read the input stream and
             // parse the response.
             int responseCode = urlConn.getResponseCode();
+            Log.i(LOG_TAG, "getResponseCode" + urlConn.getResponseCode());
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 Log.i(LOG_TAG, "from makeHTTPRequest: Response code 200");
 
@@ -101,8 +110,7 @@ public final class Search {
             } else {
                 Log.i(LOG_TAG, "from makeHTTPRequest responseCode:: " + urlConn.getResponseCode()
                         + "\nresponseMessage::" + urlConn.getResponseMessage()
-                        + "\nErrorStream:: " + urlConn.getErrorStream().read()
-                        + "\ninputStream:: " + urlConn.getInputStream().read());
+                        + "\nErrorStream:: " + urlConn.getErrorStream().read());
                 getJSONErrorMessage(readFromStream(urlConn.getInputStream()));
             }
         } catch (IOException e) {
@@ -223,6 +231,14 @@ public final class Search {
                     // TODO: check if it's not null.
                     String img = currentResult.getString("urlToImage");
 
+                    Log.i(LOG_TAG, "description:: " + description);
+                    // Handle cases where 'description' is null by replacing with 'content'
+                    if (description.equalsIgnoreCase("null")) {
+                        description = currentResult.getString("content");
+                        if (description.equalsIgnoreCase("null")) {
+                            description = (String) "Click to learn more at " + source;
+                        }
+                    }
                     news.add(new News(title, date, page, source,
                             description, totalResults));
                 }

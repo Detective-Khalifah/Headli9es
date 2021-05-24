@@ -8,8 +8,7 @@ public class News {
     private String date; // publication date
     private String page; // {@link URL} of the news article
     private String source; // publisher/writer of the article
-    private String description; //
-    private String content; // full article text content
+    private String description; // summary/sub-title of article
     private String category; // category/topic of the article
 
     /**
@@ -64,9 +63,6 @@ public class News {
     public String getDescription() { return this.description; }
     public void setDescription (String description) { this.description = description; }
 
-    public String getContent (){return this.content;}
-    public void setContent (String content){this.content = content;}
-
     public String getCategory () { return category; }
     public void setCategory (String category) { this.category = category; }
 
@@ -74,6 +70,5 @@ public class News {
     public void setTotalArticles (int numArticles) {this.totalArticles = numArticles;}
 
     public int getTotalPages () { return totalPages; }
-
     public void setTotalPages (int totalPages) { this.totalPages = totalPages; }
 }

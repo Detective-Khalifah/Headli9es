@@ -58,7 +58,7 @@
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="2"
-            android:text="@{news.content}"
+            android:text="@{news.description}"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
