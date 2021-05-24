@@ -2,7 +2,6 @@ package project.android.headli9es;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import java.util.List;
 
@@ -10,7 +9,6 @@ import androidx.loader.content.AsyncTaskLoader;
 
 public class NewsLoader extends AsyncTaskLoader<List<News>> {
 
-    private static final String LOG_TAG = NewsLoader.class.getName();
     private String apiCode, newsURL;
     private List<News> result;
 
@@ -37,17 +35,14 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
 
     @Override
     public List<News> loadInBackground () {
-        Log.i(LOG_TAG, "This is loadInBackground. I received: " + newsURL);
 
         // Don't perform the request if there are no URLs, or the first URL is null.
         if (newsURL == null) {
-            Log.i(this.getClass().getName(), "Conditional check finds null");
             return null;
         } else {
             // Call static method #lookUpArticles, passing context passed when class was
             // instantiated by call to super(context), the {@link URL} & API code
             result = Search.lookupArticles(getContext(), newsURL, apiCode);
-            Log.i(this.getClass().getName(), "result List data: " + result);
             return result;
         }
     }
