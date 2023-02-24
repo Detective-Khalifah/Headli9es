@@ -1,49 +1,43 @@
-package project.android.headli9es;
+package project.android.headli9es
 
-import android.content.Context;
-import android.os.Bundle;
+import android.content.Context
+import android.os.Bundle
+import androidx.loader.content.AsyncTaskLoader
 
-import java.util.List;
+class NewsLoader(context: Context?, lookupParams: Bundle) : AsyncTaskLoader<List<News>?>(
+    context!!
+) {
+    private val apiCode: String?
+    private val newsURL: String?
+    private var result: List<News>? = null
 
-import androidx.loader.content.AsyncTaskLoader;
-
-public class NewsLoader extends AsyncTaskLoader<List<News>> {
-
-    private String apiCode, newsURL;
-    private List<News> result;
-
-    public NewsLoader (Context context, Bundle lookupParams) {
-        super(context);
-        newsURL = lookupParams.getString("link");
-        apiCode = lookupParams.getString("code");
+    init {
+        newsURL = lookupParams.getString("link")
+        apiCode = lookupParams.getString("code")
     }
 
-    @Override
-    public void deliverResult (List<News> data) {
-        result = data;
-        super.deliverResult(data);
+    override fun deliverResult(data: List<News>?) {
+        result = data
+        super.deliverResult(data)
     }
 
-    @Override
-    protected void onStartLoading () {
-        super.onStartLoading();
+    override fun onStartLoading() {
+        super.onStartLoading()
         if (result != null) {
-            deliverResult(result);
-        } else
-            forceLoad();
+            deliverResult(result)
+        } else forceLoad()
     }
 
-    @Override
-    public List<News> loadInBackground () {
+    override fun loadInBackground(): List<News>? {
 
         // Don't perform the request if there are no URLs, or the first URL is null.
-        if (newsURL == null) {
-            return null;
+        return if (newsURL == null) {
+            null
         } else {
             // Call static method #lookUpArticles, passing context passed when class was
             // instantiated by call to super(context), the {@link URL} & API code
-            result = Search.lookupArticles(getContext(), newsURL, apiCode);
-            return result;
+            result = Search.lookupArticles(context, newsURL, apiCode)
+            result
         }
     }
 }

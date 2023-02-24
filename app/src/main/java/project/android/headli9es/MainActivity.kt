@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<New
     }
 
     override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<List<News>?> {
-        return NewsLoader(this, bundle)
+        return NewsLoader(this, bundle!!)
     }
 
     override fun onLoadFinished(loader: Loader<List<News>?>, data: List<News>?) {
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<New
 
         // If there is a valid list of {@link News}, then add them to the {@link NewsAdapter}'s dataset.
         // This will trigger the {@link ListView} to update.
-        if (data != null && !data.isEmpty()) {
+        if (data != null && data.isNotEmpty()) {
             mMainBinding.tvNoa.visibility = View.VISIBLE
             mMainBinding.linArticlesCount.tvNumArticles.text = resources.getQuantityString(
                 R.plurals.articles_count,
@@ -185,46 +185,50 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<New
         val uriBuilder: Uri.Builder
         val NY_TIMES_CODE = getString(R.string.ny_times_code)
         val NEWS_CODE = getString(R.string.news_code)
-        if (apiCode == NY_TIMES_CODE) {
-            base = Uri.parse(NY_TIMES_HOST)
-            uriBuilder = base.buildUpon()
-            uriBuilder.appendEncodedPath(NY_TIMES_BASE_PATH)
-            uriBuilder.appendPath(NY_TIMES_DEFAULT_SECTION)
-            uriBuilder.appendQueryParameter(NY_TIMES_AUTH_TAG, NY_TIMES_AUTH)
+        when (apiCode) {
+            NY_TIMES_CODE -> {
+                base = Uri.parse(NY_TIMES_HOST)
+                uriBuilder = base.buildUpon()
+                uriBuilder.appendEncodedPath(NY_TIMES_BASE_PATH)
+                uriBuilder.appendPath(NY_TIMES_DEFAULT_SECTION)
+                uriBuilder.appendQueryParameter(NY_TIMES_AUTH_TAG, NY_TIMES_AUTH)
 
-            // Attach apiCode & parsed New York Times API {@link URL} to bundle.
-            seek.putString("code", apiCode)
-            seek.putString("link", uriBuilder.toString())
-        } else if (apiCode == NEWS_CODE) {
-            base = Uri.parse(NEWS_API_BASE_URL)
-            uriBuilder = base.buildUpon()
-            uriBuilder.appendPath(NEWS_DEFAULT_PATH)
-            // "Required parameters are missing. Please set any of the following parameters and
-            // try again: sources, q, language, country, category."
-            uriBuilder.appendQueryParameter("country", "ng")
-            uriBuilder.appendQueryParameter(
-                getString(R.string.news_page_size_query_param),
-                newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10")
-            )
-            uriBuilder.appendQueryParameter(NEWS_AUTH_TAG, NEWS_AUTH)
+                // Attach apiCode & parsed New York Times API {@link URL} to bundle.
+                seek.putString("code", apiCode)
+                seek.putString("link", uriBuilder.toString())
+            }
+            NEWS_CODE -> {
+                base = Uri.parse(NEWS_API_BASE_URL)
+                uriBuilder = base.buildUpon()
+                uriBuilder.appendPath(NEWS_DEFAULT_PATH)
+                // "Required parameters are missing. Please set any of the following parameters and
+                // try again: sources, q, language, country, category."
+                uriBuilder.appendQueryParameter("country", "ng")
+                uriBuilder.appendQueryParameter(
+                    getString(R.string.news_page_size_query_param),
+                    newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10")
+                )
+                uriBuilder.appendQueryParameter(NEWS_AUTH_TAG, NEWS_AUTH)
 
-            // Attach apiCode & parsed newsapi.org API {@link URL} to bundle.
-            seek.putString("code", apiCode)
-            seek.putString("link", uriBuilder.toString())
-        } else { // GUARDIAN_API_CODE:
-            base = Uri.parse(GUARDIAN_API_BASE_URL)
-            uriBuilder = base.buildUpon()
-            uriBuilder.appendPath(GUARDIAN_DEFAULT_PATH)
-            uriBuilder.appendQueryParameter(
-                getString(R.string.guardian_page_size_query_param),
-                newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10")
-            )
-            uriBuilder.appendQueryParameter("show-tags", "contributor")
-            uriBuilder.appendQueryParameter(GUARDIAN_AUTH_TAG, GUARDIAN_AUTH)
-            Log.i(MainActivity::class.java.name, "url:: $uriBuilder")
-            // Attach apiCode & parsed Default news API {@link URL} to bundle.
-            seek.putString("code", apiCode)
-            seek.putString("link", uriBuilder.toString())
+                // Attach apiCode & parsed newsapi.org API {@link URL} to bundle.
+                seek.putString("code", apiCode)
+                seek.putString("link", uriBuilder.toString())
+            }
+            else -> { // GUARDIAN_API_CODE:
+                base = Uri.parse(GUARDIAN_API_BASE_URL)
+                uriBuilder = base.buildUpon()
+                uriBuilder.appendPath(GUARDIAN_DEFAULT_PATH)
+                uriBuilder.appendQueryParameter(
+                    getString(R.string.guardian_page_size_query_param),
+                    newsConfig.getString(PAGE_SIZE_PREFERENCE_KEY, "10")
+                )
+                uriBuilder.appendQueryParameter("show-tags", "contributor")
+                uriBuilder.appendQueryParameter(GUARDIAN_AUTH_TAG, GUARDIAN_AUTH)
+                Log.i(MainActivity::class.java.name, "url:: $uriBuilder")
+                // Attach apiCode & parsed Default news API {@link URL} to bundle.
+                seek.putString("code", apiCode)
+                seek.putString("link", uriBuilder.toString())
+            }
         }
         disableSelectedButton(apiCode)
         return seek
@@ -261,20 +265,24 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<New
         override fun onClick(v: View) {
             val id = v.id
             val selectedAPI: String
-            if (id == mMainBinding.btnNewsApi.id) {
-                selectedAPI = getString(R.string.news)
-                newsConfig.edit()
-                    .putString(NEWS_OUTLET_PREFERENCE_KEY, getString(R.string.news_code)).apply()
-            } else if (id == mMainBinding.btnNyTimes.id) {
-                selectedAPI = getString(R.string.ny_times)
-                newsConfig.edit()
-                    .putString(NEWS_OUTLET_PREFERENCE_KEY, getString(R.string.ny_times_code))
-                    .apply()
-            } else {
-                selectedAPI = getString(R.string.guardian)
-                newsConfig.edit()
-                    .putString(NEWS_OUTLET_PREFERENCE_KEY, getString(R.string.guardian_code))
-                    .apply()
+            when (id) {
+                mMainBinding.btnNewsApi.id -> {
+                    selectedAPI = getString(R.string.news)
+                    newsConfig.edit()
+                        .putString(NEWS_OUTLET_PREFERENCE_KEY, getString(R.string.news_code)).apply()
+                }
+                mMainBinding.btnNyTimes.id -> {
+                    selectedAPI = getString(R.string.ny_times)
+                    newsConfig.edit()
+                        .putString(NEWS_OUTLET_PREFERENCE_KEY, getString(R.string.ny_times_code))
+                        .apply()
+                }
+                else -> {
+                    selectedAPI = getString(R.string.guardian)
+                    newsConfig.edit()
+                        .putString(NEWS_OUTLET_PREFERENCE_KEY, getString(R.string.guardian_code))
+                        .apply()
+                }
             }
             onSharedPreferenceChanged(newsConfig, NEWS_OUTLET_PREFERENCE_KEY!!)
             Snackbar.make(
@@ -305,7 +313,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<New
         private const val NEWS_AUTH_TAG = "apiKey"
         private const val NY_TIMES_AUTH = "Vd6bJTsQALVX8fguWnFtpd37xZjch8f5"
         private const val NY_TIMES_AUTH_TAG = "api-key"
-        private var DEFAULT_OUTLET: String? = null
+        private lateinit var DEFAULT_OUTLET: String
         private var NEWS_OUTLET_PREFERENCE_KEY: String? = null
         private var PAGE_SIZE_PREFERENCE_KEY: String? = null
     }
