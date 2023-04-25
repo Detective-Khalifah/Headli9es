@@ -14,120 +14,144 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/lin"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/cardview_shadow_start_color"
-            android:padding="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/tv_news_outlet_label"
+            <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/news_outlet"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:liftOnScroll="true"
+                app:liftOnScrollTargetViewId="@id/list_view">
 
-            <LinearLayout
-                android:id="@+id/lin_news_outlet"
-                style="?android:attr/buttonBarStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label">
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/topAppBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_scrollFlags="scroll|enterAlways|snap"
+                    app:menu="@menu/api_settings"
+                    app:title="@string/app_name" />
 
-                <Button
-                    android:id="@+id/btn_guardian"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:longClickable="false"
-                    android:onClick="@{clicker::onClick}"
-                    android:text="@string/btn_the_guardian" />
+            </com.google.android.material.appbar.AppBarLayout>
 
-                <Button
-                    android:id="@+id/btn_ny_times"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:longClickable="false"
-                    android:onClick="@{(view) -> clicker.onClick(view)}"
-                    android:text="@string/btn_new_york_times" />
-
-                <Button
-                    android:id="@+id/btn_news_api"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:longClickable="false"
-                    android:onClick="@{clicker::onClick}"
-                    android:text="@string/btn_news" />
-
-            </LinearLayout>
-
-            <!-- Article(s) count TextView -->
-            <FrameLayout
-                android:id="@+id/frame_articles_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/lin_news_outlet">
-
-                <include
-                    android:id="@+id/lin_articles_count"
-                    layout="@layout/num_articles" />
-
-            </FrameLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- FrameLayout that holds ListView/Empty (0) articles TextView/ProgressBar (Loading Indicator) -->
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lin">
-
-            <ListView
-                android:id="@+id/list_view"
+            <!-- Scrollable content -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/lin"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:dividerHeight="4dp"
-                android:verticalScrollbarPosition="defaultPosition" />
+                android:background="@color/cardview_shadow_start_color"
+                android:padding="4dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tv_noa"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/tv_news_outlet_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/news_outlet"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/lin_news_outlet"
+                    style="?android:attr/buttonBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_news_outlet_label">
+
+                    <Button
+                        android:id="@+id/btn_guardian"
+                        style="?android:attr/buttonBarButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:longClickable="false"
+                        android:onClick="@{clicker::onClick}"
+                        android:text="@string/btn_the_guardian" />
+
+                    <Button
+                        android:id="@+id/btn_ny_times"
+                        style="?android:attr/buttonBarButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:longClickable="false"
+                        android:onClick="@{(view) -> clicker.onClick(view)}"
+                        android:text="@string/btn_new_york_times" />
+
+                    <Button
+                        android:id="@+id/btn_news_api"
+                        style="?android:attr/buttonBarButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:longClickable="false"
+                        android:onClick="@{clicker::onClick}"
+                        android:text="@string/btn_news" />
+
+                </LinearLayout>
+
+                <!-- Article(s) count TextView -->
+                <FrameLayout
+                    android:id="@+id/frame_articles_count"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/lin_news_outlet">
+
+                    <include
+                        android:id="@+id/lin_articles_count"
+                        layout="@layout/num_articles" />
+
+                </FrameLayout>
+
+                <!-- FrameLayout that holds ListView/Empty (0) articles TextView/ProgressBar (Loading Indicator) -->
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/frame_articles_count">
+
+                    <ListView
+                        android:id="@+id/list_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:dividerHeight="4dp"
+                        android:verticalScrollbarPosition="defaultPosition" />
+
+                    <TextView
+                        android:id="@+id/tv_noa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="invisible" />
+
+                    <ProgressBar
+                        android:id="@+id/pb_news"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="visible" />
+
+                </FrameLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <FrameLayout
+                android:id="@+id/frame_snack"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="invisible" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <ProgressBar
-                android:id="@+id/pb_news"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="visible" />
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/frame_snack"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

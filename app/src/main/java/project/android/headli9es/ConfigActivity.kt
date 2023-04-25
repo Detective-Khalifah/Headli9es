@@ -7,17 +7,27 @@ import android.preference.Preference.OnPreferenceChangeListener
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import project.android.headli9es.databinding.ActivityConfigBinding
 
 class ConfigActivity : AppCompatActivity() {
+
+    private lateinit var mBinding: ActivityConfigBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_config)
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_config)
+
+        mBinding.topAppBar.setNavigationOnClickListener { finish() }
     }
 
     class NewsConfigFragment : PreferenceFragment(), OnPreferenceChangeListener {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.configs)
+
+            // TODO: Set the default news outlet to always load on open, regardless of selected,
+            //  TEMPORARY outlet used at runtime.
 
             // Find the {@link ListPreference}s in configs.xml
             val newsOutlet = findPreference(getString(R.string.settings_news_outlet_key))

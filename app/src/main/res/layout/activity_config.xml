@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:name="project.android.headli9es.ConfigActivity$NewsConfigFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ConfigActivity">
 
-</fragment>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:liftOnScroll="true">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/baseline_close_24"
+                app:title="@string/news_settings_menu_title" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Scrollable content -->
+        <fragment
+            android:id="@+id/fragment_config"
+            android:name="project.android.headli9es.ConfigActivity$NewsConfigFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context=".ConfigActivity">
+
+        </fragment>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

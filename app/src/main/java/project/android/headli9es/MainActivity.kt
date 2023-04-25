@@ -78,20 +78,31 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<New
                 Snackbar.LENGTH_LONG
             ).show()
         }
-    }
 
+        mMainBinding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.news_settings_menu -> {
+                    // Handle Settings text press
+                    startActivity(Intent(this, ConfigActivity::class.java))
+                    true
+                }
+
+                else -> false
+            }
+        }
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.api_settings, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.news_settings_menu) {
-            startActivity(Intent(this, ConfigActivity::class.java))
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        if (item.itemId == R.id.news_settings_menu) {
+//            startActivity(Intent(this, ConfigActivity::class.java))
+//            return true
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
     /**
      * Register onPreferenceChangeListener and call generateURL() every time the
